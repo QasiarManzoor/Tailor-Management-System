@@ -84,7 +84,7 @@
                     <p class="text-muted small mb-0">Orders that still need payment collection.</p>
                 </div>
                 <div class="card-body p-4 pt-3">
-                    <div class="d-flex justify-content-between align-items-center rounded-4 p-3 mb-3" style="background:#f9f4ec; border:1px solid #eadfce;">
+                    <div class="d-flex justify-content-between align-items-center rounded-4 p-3 mb-3 balance-summary">
                         <div>
                             <div class="metric-label">Outstanding Amount</div>
                             <div class="h3 mb-0">Rs. {{ number_format((float) $stats['pendingBalanceAmount'], 2) }}</div>
@@ -139,3 +139,4 @@
         </div>
     </div>
 @endsection
+
