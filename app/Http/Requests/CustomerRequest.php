@@ -16,8 +16,8 @@ class CustomerRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:50'],
-            'alternate_phone' => ['nullable', 'string', 'max:50'],
+            'phone' => ['required', 'regex:/^\+?[0-9]{7,20}$/'],
+            'alternate_phone' => ['nullable', 'regex:/^\+?[0-9]{7,20}$/'],
             'address' => ['nullable', 'string'],
             'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
             'notes' => ['nullable', 'string'],

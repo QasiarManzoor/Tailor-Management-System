@@ -40,7 +40,7 @@ class MeasurementRequest extends FormRequest
         ];
 
         foreach ($decimalFields as $field) {
-            $rules[$field] = ['nullable', 'numeric', 'min:0'];
+            $rules[$field] = ['nullable', 'numeric', 'decimal:0,2', 'min:0'];
         }
 
         return $rules;

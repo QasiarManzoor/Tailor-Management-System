@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Customer extends Model
 {
@@ -18,6 +19,41 @@ class Customer extends Model
         'gender',
         'notes',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Customer $customer) {
+            if (blank($customer->customer_no)) {
+                $customer->customer_no = static::generateCustomerNumber();
+            }
+        });
+    }
+
+    public static function generateCustomerNumber(): string
+    {
+        return DB::transaction(function () {
+            $prefix = '2026';
+
+            $lastCustomerNo = static::query()
+                ->select('customer_no')
+                ->where('customer_no', 'like', $prefix.'%')
+                ->whereNotNull('customer_no')
+                ->lockForUpdate()
+                ->orderByDesc('customer_no')
+                ->value('customer_no');
+
+            $nextSequence = $lastCustomerNo
+                ? ((int) substr($lastCustomerNo, strlen($prefix))) + 1
+                : 1;
+
+            do {
+                $candidate = sprintf('%s%05d', $prefix, $nextSequence);
+                $nextSequence++;
+            } while (static::where('customer_no', $candidate)->exists());
+
+            return $candidate;
+        }, 3);
+    }
 
     public function measurements(): HasMany
     {

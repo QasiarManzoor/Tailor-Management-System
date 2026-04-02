@@ -95,7 +95,7 @@ class Order extends Model
     public static function generateOrderNumber(Carbon $date): string
     {
         return DB::transaction(function () use ($date) {
-            $prefix = 'ORD-'.$date->format('Ymd');
+            $prefix = 'ORD-2026';
 
             $lastOrderNo = static::query()
                 ->select('order_no')
@@ -104,9 +104,18 @@ class Order extends Model
                 ->orderByDesc('order_no')
                 ->value('order_no');
 
-            $nextSequence = $lastOrderNo
-                ? ((int) str($lastOrderNo)->afterLast('-')) + 1
-                : 1;
+            $lastSequence = 0;
+
+            if (filled($lastOrderNo)) {
+                $lastOrderNo = (string) $lastOrderNo;
+                $lastSeparatorPosition = strrpos($lastOrderNo, '-');
+
+                if ($lastSeparatorPosition !== false) {
+                    $lastSequence = (int) substr($lastOrderNo, $lastSeparatorPosition + 1);
+                }
+            }
+
+            $nextSequence = $lastSequence + 1;
 
             do {
                 $candidate = sprintf('%s-%04d', $prefix, $nextSequence);
@@ -150,3 +159,11 @@ class Order extends Model
             && ! in_array($this->status, ['delivered', 'cancelled'], true);
     }
 }
+
+
+
+
+
+
+
+

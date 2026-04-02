@@ -41,7 +41,7 @@
         }
 
         .compact-receipt .print-page {
-            padding: 6mm;
+            padding: 4mm 4mm 2mm;
         }
 
         .compact-receipt .shop-header {
@@ -71,14 +71,14 @@
         .compact-receipt .receipt-grid {
             display: grid;
             grid-template-columns: 1.2fr .8fr;
-            gap: .4rem;
-            margin-bottom: .4rem;
+            gap: .3rem;
+            margin-bottom: .25rem;
         }
 
         .compact-receipt .receipt-card {
             border: 1px solid var(--line);
             border-radius: .5rem;
-            padding: .45rem .55rem;
+            padding: .35rem .45rem;
             background: #fff;
             break-inside: avoid;
             page-break-inside: avoid;
@@ -87,61 +87,61 @@
         .compact-receipt .receipt-card + .receipt-card,
         .compact-receipt .receipt-card + .receipt-grid,
         .compact-receipt .receipt-grid + .receipt-card {
-            margin-top: .4rem;
+            margin-top: .25rem;
         }
 
         .compact-receipt .section-title {
-            font-size: .68rem;
-            margin-bottom: .35rem;
-            letter-spacing: .03em;
+            font-size: .64rem;
+            margin-bottom: .25rem;
+            letter-spacing: .02em;
         }
 
         .compact-receipt .meta-label {
-            font-size: .6rem;
-            margin-bottom: .1rem;
+            font-size: .56rem;
+            margin-bottom: .05rem;
             letter-spacing: .02em;
         }
 
         .compact-receipt .meta-value {
-            font-size: .76rem;
-            line-height: 1.2;
+            font-size: .72rem;
+            line-height: 1.15;
         }
 
         .compact-receipt .detail-grid {
-            gap: .3rem .55rem;
+            gap: .2rem .4rem;
         }
 
         .compact-receipt .summary-table td,
         .compact-receipt .summary-table th,
         .compact-receipt .table td,
         .compact-receipt .table th {
-            padding: .22rem .28rem;
-            font-size: .66rem;
-            line-height: 1.15;
+            padding: .16rem .22rem;
+            font-size: .61rem;
+            line-height: 1.08;
         }
 
         .compact-receipt .measurement-table td,
         .compact-receipt .measurement-table th {
-            padding: .2rem .28rem;
-            font-size: .63rem;
-            line-height: 1.1;
+            padding: .14rem .2rem;
+            font-size: .58rem;
+            line-height: 1.02;
             vertical-align: middle;
         }
 
         .compact-receipt .notes-box {
             min-height: 0;
-            max-height: 16mm;
+            max-height: 9mm;
             overflow: hidden;
-            padding: .35rem .45rem;
-            border-radius: .45rem;
-            font-size: .66rem;
-            line-height: 1.2;
+            padding: .2rem .3rem;
+            border-radius: .35rem;
+            font-size: .58rem;
+            line-height: 1.05;
         }
 
         .compact-receipt .receipt-inline {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: .3rem .5rem;
+            gap: .2rem .35rem;
         }
 
         .compact-receipt .bilingual-label {
@@ -150,8 +150,8 @@
 
         .compact-receipt .urdu-text,
         .compact-receipt .ur-label {
-            line-height: 1.5;
-            font-size: .66rem;
+            line-height: 1.35;
+            font-size: .58rem;
         }
 
         .compact-receipt .signature-line {
@@ -282,3 +282,4 @@
         </div>
     @endif
 @endsection
+

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
+use App\Support\ActivityLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,8 @@ class CustomerController extends Controller
             ->withCount(['measurements', 'orders'])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($innerQuery) use ($search) {
-                    $innerQuery->where('name', 'like', '%'.$search.'%')
+                    $innerQuery->where('customer_no', 'like', '%'.$search.'%')
+                        ->orWhere('name', 'like', '%'.$search.'%')
                         ->orWhere('phone', 'like', '%'.$search.'%')
                         ->orWhere('alternate_phone', 'like', '%'.$search.'%');
                 });
@@ -40,6 +42,12 @@ class CustomerController extends Controller
     public function store(CustomerRequest $request): RedirectResponse
     {
         $customer = Customer::create($request->validated());
+
+        ActivityLogger::log('customer.created', 'Customer created.', [
+            'customer_id' => $customer->id,
+            'customer_no' => $customer->customer_no,
+            'customer_name' => $customer->name,
+        ]);
 
         return redirect()
             ->route('customers.show', $customer)
@@ -65,6 +73,12 @@ class CustomerController extends Controller
     public function update(CustomerRequest $request, Customer $customer): RedirectResponse
     {
         $customer->update($request->validated());
+
+        ActivityLogger::log('customer.updated', 'Customer updated.', [
+            'customer_id' => $customer->id,
+            'customer_no' => $customer->customer_no,
+            'customer_name' => $customer->name,
+        ]);
 
         return redirect()
             ->route('customers.show', $customer)

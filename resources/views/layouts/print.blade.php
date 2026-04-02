@@ -15,6 +15,7 @@
             --line: #cbd5e1;
             --accent: #9a6b2f;
             --paper: #ffffff;
+            --page-inline-padding: 14mm;
         }
         @page {
             size: A4;
@@ -34,19 +35,57 @@
             background: var(--paper);
             border: 1px solid #dbe4ee;
             box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
-            padding: 14mm;
+            padding: var(--page-inline-padding);
+            display: flex;
+            flex-direction: column;
         }
         .shop-header {
             border-bottom: 2px solid var(--accent);
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
+            padding-bottom: .7rem;
+            margin-bottom: .65rem;
+            text-align: center;
         }
         .shop-title {
             font-size: 1.5rem;
             font-weight: 700;
+            letter-spacing: .03em;
         }
-        .shop-subtitle {
+        .shop-meta {
+            font-size: .9rem;
+            line-height: 1.35;
+            color: var(--ink);
+            font-weight: 600;
+        }
+        .shop-meta-line {
+            margin-top: .1rem;
+        }
+        .print-content {
+            flex: 1 1 auto;
+        }
+        .print-footer {
+            margin-top: .2rem;
+            width: calc(100% + (var(--page-inline-padding) * 2));
+            margin-left: calc(var(--page-inline-padding) * -1);
+            margin-right: calc(var(--page-inline-padding) * -1);
+            break-inside: avoid;
+            page-break-inside: avoid;
+            overflow: hidden;
+        }
+        .print-footer-logo {
+            display: block;
+            width: 100%;
+            height: 32mm;
+            max-width: none;
+            max-height: none;
+            object-fit: contain;
+            object-position: center;
+        }
+        .print-footer-copy {
+            text-align: center;
+            padding-top: .35rem;
+            font-size: .76rem;
             color: var(--muted);
+            line-height: 1.35;
         }
         .print-actions {
             display: flex;
@@ -139,11 +178,39 @@
             font-size: 12px;
         }
         .compact-receipt .print-page {
-            padding: 10mm;
+            --page-inline-padding: 6mm;
+            padding: 6mm 6mm 4mm;
         }
         .compact-receipt .shop-header {
-            margin-bottom: .75rem;
-            padding-bottom: .75rem;
+            margin-bottom: .45rem;
+            padding-bottom: .4rem;
+        }
+        .compact-receipt .shop-title {
+            font-size: .95rem;
+        }
+        .compact-receipt .print-muted,
+        .compact-receipt .shop-meta,
+        .compact-receipt .print-footer {
+            font-size: .62rem;
+            line-height: 1.2;
+        }
+        .compact-receipt .shop-meta-line {
+            margin-top: .05rem;
+        }
+        .compact-receipt .print-footer {
+            margin-top: .08rem;
+        }
+        .compact-receipt .print-footer-logo {
+            width: 100%;
+            height: 16mm;
+            max-width: none;
+            max-height: none;
+            object-fit: contain;
+            object-position: center;
+        }
+        .compact-receipt .print-footer-copy {
+            font-size: .58rem;
+            padding-top: .12rem;
         }
         .compact-receipt .print-card {
             padding: .75rem;
@@ -213,12 +280,14 @@
         @media print {
             body {
                 background: white;
+                color: #111;
             }
             .print-shell {
                 margin: 0;
                 max-width: none;
             }
             .print-page {
+                --page-inline-padding: 0mm;
                 box-shadow: none;
                 border: 0;
                 padding: 0;
@@ -235,23 +304,51 @@
     @stack('print-styles')
 </head>
 <body class="@yield('body-class')">
+@php
+    $footerBannerPath = 'images/shaq-technologies-botton-logo.png';
+    $footerBannerAbsolutePath = public_path($footerBannerPath);
+    $hasFooterBanner = file_exists($footerBannerAbsolutePath);
+    $backUrl = match (true) {
+        isset($order) => route('orders.show', $order),
+        isset($measurement) => route('measurements.show', $measurement),
+        default => route('dashboard'),
+    };
+@endphp
 <div class="print-shell">
     <div class="print-actions no-print">
         <button type="button" class="print-btn" onclick="window.print()">Print</button>
-        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">Back</button>
+        <a href="{{ $backUrl }}" class="btn btn-outline-secondary">Back</a>
     </div>
     <div class="print-page">
-        <div class="shop-header d-flex justify-content-between align-items-start gap-3">
-            <div>
-                <div class="shop-title">Rashid Tailor Shop</div>
-                <div class="shop-subtitle">Digital Tailor Management System</div>
-            </div>
-            <div class="text-end">
-                <div class="meta-label">Document</div>
-                <div class="meta-value">{{ $documentTitle ?? 'Print View' }}</div>
+        <div class="shop-header">
+            <div class="shop-title">{{ $systemSettings->shop_name }}</div>
+            <div class="shop-meta">
+                <div class="shop-meta-line">FABRIC &amp; TAILOR {{ $systemSettings->shop_phone_primary }}</div>
+                @if ($systemSettings->shop_address_line_1)
+                    <div class="shop-meta-line">{{ $systemSettings->shop_address_line_1 }}</div>
+                @endif
+                <div class="shop-meta-line">
+                    {{ $systemSettings->shop_address_line_2 }}
+                    @if ($systemSettings->shop_phone_secondary)
+                        Ph:{{ $systemSettings->shop_phone_secondary }}
+                    @endif
+                </div>
             </div>
         </div>
-        @yield('print-content')
+        <div class="print-content">
+            @yield('print-content')
+        </div>
+        <div class="print-footer">
+            @if ($hasFooterBanner)
+                <img src="{{ asset($footerBannerPath) }}" alt="Receipt footer banner" class="print-footer-logo">
+            @else
+                <div class="print-footer-copy">
+                    <div>{{ $systemSettings->receipt_footer_company_name }}</div>
+                    <div>{{ $systemSettings->receipt_footer_phone }}</div>
+                    <div>{{ $systemSettings->receipt_footer_email }}</div>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 </body>

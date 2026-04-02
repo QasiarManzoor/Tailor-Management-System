@@ -1,20 +1,24 @@
 <div class="row g-4">
-    <div class="col-md-6">
+    <div class="col-md-4">
+        <label class="form-label">Customer Number</label>
+        <input type="text" class="form-control" value="{{ $customer->customer_no ?: 'Auto-generated on save' }}" disabled>
+    </div>
+    <div class="col-md-8">
         <label class="form-label" for="name">Customer Name</label>
-        <input type="text" id="name" name="name" value="{{ old('name', $customer->name) }}" class="form-control @error('name') is-invalid @enderror" required>
+        <input type="text" id="name" name="name" value="{{ old('name', $customer->name) }}" class="form-control @error('name') is-invalid @enderror" maxlength="255" required>
         @include('partials.field-error', ['field' => 'name'])
     </div>
     <div class="col-md-3">
         <label class="form-label" for="phone">Phone</label>
-        <input type="text" id="phone" name="phone" value="{{ old('phone', $customer->phone) }}" class="form-control @error('phone') is-invalid @enderror" required>
+        <input type="tel" id="phone" name="phone" value="{{ old('phone', $customer->phone) }}" class="form-control @error('phone') is-invalid @enderror" inputmode="tel" pattern="\+?[0-9]{7,20}" maxlength="20" data-phone-input required>
         @include('partials.field-error', ['field' => 'phone'])
     </div>
     <div class="col-md-3">
         <label class="form-label" for="alternate_phone">Alternate Phone</label>
-        <input type="text" id="alternate_phone" name="alternate_phone" value="{{ old('alternate_phone', $customer->alternate_phone) }}" class="form-control @error('alternate_phone') is-invalid @enderror">
+        <input type="tel" id="alternate_phone" name="alternate_phone" value="{{ old('alternate_phone', $customer->alternate_phone) }}" class="form-control @error('alternate_phone') is-invalid @enderror" inputmode="tel" pattern="\+?[0-9]{7,20}" maxlength="20" data-phone-input>
         @include('partials.field-error', ['field' => 'alternate_phone'])
     </div>
-    <div class="col-md-4">
+    <div class="col-md-2">
         <label class="form-label" for="gender">Gender</label>
         <select id="gender" name="gender" class="form-select @error('gender') is-invalid @enderror">
             <option value="">Select</option>
@@ -24,7 +28,7 @@
         </select>
         @include('partials.field-error', ['field' => 'gender'])
     </div>
-    <div class="col-md-8">
+    <div class="col-md-4">
         <label class="form-label" for="address">Address</label>
         <textarea id="address" name="address" class="form-control @error('address') is-invalid @enderror" rows="3">{{ old('address', $customer->address) }}</textarea>
         @include('partials.field-error', ['field' => 'address'])

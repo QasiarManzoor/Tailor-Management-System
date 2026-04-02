@@ -78,15 +78,7 @@
                     <div class="d-flex justify-content-between py-2"><span>Remaining Balance</span><strong class="{{ (float) $order->balance_amount > 0 ? 'text-danger' : 'text-success' }}">Rs. {{ number_format((float) $order->balance_amount, 2) }}</strong></div>
                 </div>
             </div>
-            <div class="card card-soft mb-4">
-                <div class="card-body p-4">
-                    <div class="section-title mb-3">Print Options</div>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('orders.receipt', $order) }}" target="_blank" class="btn btn-outline-dark">Open Printable Receipt</a>
-                        <a href="{{ route('orders.invoice', $order) }}" target="_blank" class="btn btn-outline-dark">Open Invoice / Delivery Slip</a>
-                    </div>
-                </div>
-            </div>
+
             <div class="card card-soft">
                 <div class="card-body p-4">
                     <div class="section-title mb-3">Quick Actions</div>
@@ -104,3 +96,4 @@
         </div>
     </div>
 @endsection
+

@@ -14,6 +14,7 @@
             <div class="card card-soft h-100">
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="list-chip">Customer # {{ $customer->customer_no ?: '-' }}</span>
                         <span class="list-chip">{{ $customer->phone }}</span>
                         @if ($customer->alternate_phone)
                             <span class="list-chip">Alt {{ $customer->alternate_phone }}</span>

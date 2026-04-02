@@ -11,9 +11,9 @@
                 <div class="card-body p-4">
                     <div class="section-title mb-3">Order Summary</div>
                     <div class="mb-3"><span class="metric-label d-block mb-1">Customer</span>{{ $order->customer->name }}</div>
-                    <div class="mb-3"><span class="metric-label d-block mb-1">Total Amount</span>Rs. {{ number_format((float) $order->total_amount, 2) }}</div>
-                    <div class="mb-3"><span class="metric-label d-block mb-1">Advance Received</span>Rs. {{ number_format((float) $order->advance_amount, 2) }}</div>
-                    <div><span class="metric-label d-block mb-1">Remaining Balance</span><span class="fw-semibold text-danger">Rs. {{ number_format((float) $order->balance_amount, 2) }}</span></div>
+                    <div class="mb-3"><span class="metric-label d-block mb-1">Total Amount</span>Rs. {{ number_format((float) $order->total_amount, 0) }}</div>
+                    <div class="mb-3"><span class="metric-label d-block mb-1">Advance Received</span>Rs. {{ number_format((float) $order->advance_amount, 0) }}</div>
+                    <div><span class="metric-label d-block mb-1">Remaining Balance</span><span class="fw-semibold text-danger">Rs. {{ number_format((float) $order->balance_amount, 0) }}</span></div>
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@
                         <div class="row g-4">
                             <div class="col-md-4">
                                 <label class="form-label" for="amount">Amount</label>
-                                <input type="number" step="0.01" min="0.01" max="{{ $order->balance_amount }}" id="amount" name="amount" value="{{ old('amount') }}" class="form-control @error('amount') is-invalid @enderror" required>
+                                <input type="number" step="1" min="1" max="{{ (int) $order->balance_amount }}" inputmode="numeric" data-integer-input id="amount" name="amount" value="{{ old('amount') }}" class="form-control @error('amount') is-invalid @enderror" required>
                                 @include('partials.field-error', ['field' => 'amount'])
                             </div>
                             <div class="col-md-4">
@@ -40,7 +40,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label" for="payment_date">Payment Date</label>
-                                <input type="date" id="payment_date" name="payment_date" value="{{ old('payment_date', now()->toDateString()) }}" class="form-control @error('payment_date') is-invalid @enderror" required>
+                                <input type="date" id="payment_date" name="payment_date" value="{{ old('payment_date', now()->toDateString()) }}" min="{{ now()->toDateString() }}" class="form-control @error('payment_date') is-invalid @enderror" required>
                                 @include('partials.field-error', ['field' => 'payment_date'])
                             </div>
                             <div class="col-12">
@@ -59,3 +59,5 @@
         </div>
     </div>
 @endsection
+
+

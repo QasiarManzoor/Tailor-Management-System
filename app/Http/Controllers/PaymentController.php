@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Support\ActivityLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -30,10 +31,17 @@ class PaymentController extends Controller
                 ->withErrors(['amount' => 'Payment amount cannot be greater than the remaining balance.']);
         }
 
-        $order->payments()->create($validated);
+        $payment = $order->payments()->create($validated);
 
         $order->advance_amount = (float) $order->advance_amount + (float) $validated['amount'];
         $order->refreshBalance();
+
+        ActivityLogger::log('payment.created', 'Payment recorded against an order.', [
+            'payment_id' => $payment->id,
+            'order_id' => $order->id,
+            'order_no' => $order->order_no,
+            'amount' => $payment->amount,
+        ]);
 
         return redirect()
             ->route('orders.show', $order)

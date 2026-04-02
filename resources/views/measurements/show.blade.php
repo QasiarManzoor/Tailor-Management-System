@@ -4,7 +4,7 @@
 @section('page-title', $measurement->title)
 @section('page-subtitle', 'Bilingual measurement slip view for quick reading at the shop counter.')
 @section('page-actions')
-    <a href="{{ route('measurements.print', $measurement) }}" class="btn btn-outline-dark" target="_blank">Print Slip</a>
+
     <a href="{{ route('measurements.edit', $measurement) }}" class="btn btn-outline-secondary">Edit Measurement</a>
     <a href="{{ route('orders.create', ['customer_id' => $measurement->customer_id]) }}" class="btn btn-dark">Book Order</a>
 @endsection
@@ -43,11 +43,6 @@
                 <div class="col-lg-4">
                     <div class="slip-section p-4 h-100">
                         <div class="slip-section-title">@include('partials.bilingual-text', ['key' => 'tailor.measurements.sections.measurement_summary'])</div>
-                        <div class="small text-muted mb-3">This slip is linked internally through English database fields, while the UI shows English and Urdu together.</div>
-                        <div class="slip-kpi mb-3">
-                            <div class="metric-label mb-2">Print</div>
-                            <div class="meta-value"><a href="{{ route('measurements.print', $measurement) }}" target="_blank" class="text-decoration-none">Open printable slip</a></div>
-                        </div>
                         <div class="slip-kpi">
                             <div class="metric-label mb-2">@include('partials.bilingual-text', ['key' => 'tailor.measurements.fields.title'])</div>
                             <div class="slip-kpi-value">{{ $measurement->title }}</div>
@@ -106,3 +101,5 @@
         </div>
     </div>
 @endsection
+
+

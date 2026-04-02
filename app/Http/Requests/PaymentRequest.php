@@ -16,9 +16,9 @@ class PaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'numeric', 'gt:0'],
+            'amount' => ['required', 'integer', 'min:1'],
             'payment_method' => ['required', Rule::in(Payment::METHODS)],
-            'payment_date' => ['required', 'date'],
+            'payment_date' => ['required', 'date', 'after_or_equal:today'],
             'note' => ['nullable', 'string'],
         ];
     }

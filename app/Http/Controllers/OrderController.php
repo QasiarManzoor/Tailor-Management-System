@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Measurement;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Support\ActivityLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,19 @@ class OrderController extends Controller
         ];
 
         $orders = Order::with(['customer', 'measurement'])
-            ->when($filters['order_no'] !== '', fn ($query) => $query->where('order_no', 'like', '%'.$filters['order_no'].'%'))
+            ->when($filters['order_no'] !== '', function ($query) use ($filters) {
+                $search = $filters['order_no'];
+
+                $query->where(function ($innerQuery) use ($search) {
+                    $innerQuery->where('order_no', 'like', '%'.$search.'%')
+                        ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                            $customerQuery->where('customer_no', 'like', '%'.$search.'%')
+                                ->orWhere('name', 'like', '%'.$search.'%')
+                                ->orWhere('phone', 'like', '%'.$search.'%')
+                                ->orWhere('alternate_phone', 'like', '%'.$search.'%');
+                        });
+                });
+            })
             ->when($filters['customer_id'], fn ($query) => $query->where('customer_id', $filters['customer_id']))
             ->when($filters['status'] !== '', fn ($query) => $query->where('status', $filters['status']))
             ->when($filters['delivery_date'] !== '', fn ($query) => $query->whereDate('delivery_date', $filters['delivery_date']))
@@ -67,6 +80,12 @@ class OrderController extends Controller
     {
         $order = Order::create($request->validated());
 
+        ActivityLogger::log('order.created', 'Order booked successfully.', [
+            'order_id' => $order->id,
+            'order_no' => $order->order_no,
+            'customer_id' => $order->customer_id,
+        ]);
+
         return redirect()
             ->route('orders.show', $order)
             ->with('success', 'Order booked successfully.');
@@ -86,6 +105,12 @@ class OrderController extends Controller
     {
         $order->load(['customer', 'measurement', 'payments']);
 
+        ActivityLogger::log('slip.printed', 'Printable receipt opened.', [
+            'order_id' => $order->id,
+            'order_no' => $order->order_no,
+            'type' => 'receipt',
+        ]);
+
         return view('orders.receipt', [
             'order' => $order,
         ]);
@@ -94,6 +119,12 @@ class OrderController extends Controller
     public function invoice(Order $order): View
     {
         $order->load(['customer', 'measurement', 'payments']);
+
+        ActivityLogger::log('slip.printed', 'Printable invoice opened.', [
+            'order_id' => $order->id,
+            'order_no' => $order->order_no,
+            'type' => 'invoice',
+        ]);
 
         return view('orders.invoice', [
             'order' => $order,
@@ -116,6 +147,12 @@ class OrderController extends Controller
     public function update(OrderRequest $request, Order $order): RedirectResponse
     {
         $order->update($request->validated());
+
+        ActivityLogger::log('order.updated', 'Order updated successfully.', [
+            'order_id' => $order->id,
+            'order_no' => $order->order_no,
+            'status' => $order->status,
+        ]);
 
         return redirect()
             ->route('orders.show', $order)
