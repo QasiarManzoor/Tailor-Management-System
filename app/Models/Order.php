@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToShop;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
+    use BelongsToShop;
     use HasFactory;
 
     public const STATUSES = [
@@ -39,6 +41,7 @@ class Order extends Model
     ];
 
     protected $fillable = [
+        'shop_id',
         'order_no',
         'customer_id',
         'measurement_id',
@@ -66,10 +69,12 @@ class Order extends Model
                 );
             }
 
+            $order->shop_id = static::resolveShopId($order);
             $order->balance_amount = static::calculateBalance($order->total_amount, $order->advance_amount);
         });
 
         static::updating(function (Order $order) {
+            $order->shop_id = static::resolveShopId($order);
             $order->balance_amount = static::calculateBalance($order->total_amount, $order->advance_amount);
         });
     }
@@ -94,7 +99,7 @@ class Order extends Model
 
     public static function generateOrderNumber(Carbon $date): string
     {
-        return DB::transaction(function () use ($date) {
+        return DB::transaction(function () {
             $prefix = 'ORD-2026';
 
             $lastOrderNo = static::query()
@@ -120,10 +125,23 @@ class Order extends Model
             do {
                 $candidate = sprintf('%s-%04d', $prefix, $nextSequence);
                 $nextSequence++;
-            } while (static::where('order_no', $candidate)->exists());
+            } while (static::withoutGlobalScope('shop')->where('order_no', $candidate)->exists());
 
             return $candidate;
         }, 3);
+    }
+
+    protected static function resolveShopId(Order $order): ?int
+    {
+        if ($order->customer_id) {
+            return Customer::withoutGlobalScopes()->whereKey($order->customer_id)->value('shop_id') ?: $order->shop_id;
+        }
+
+        if ($order->measurement_id) {
+            return Measurement::withoutGlobalScopes()->whereKey($order->measurement_id)->value('shop_id') ?: $order->shop_id;
+        }
+
+        return $order->shop_id;
     }
 
     public function customer(): BelongsTo
@@ -159,11 +177,3 @@ class Order extends Model
             && ! in_array($this->status, ['delivered', 'cancelled'], true);
     }
 }
-
-
-
-
-
-
-
-

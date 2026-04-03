@@ -21,7 +21,10 @@ class DefaultUserProvisioner
             return;
         }
 
+        $defaultShop = DefaultShopProvisioner::ensureDefaultShopExists();
+
         $attributes = [
+            'shop_id' => $defaultShop->id,
             'name' => 'Super Admin',
             'email' => 'admin@shaqtechnologies.com',
             'password' => 'password',

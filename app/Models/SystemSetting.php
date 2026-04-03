@@ -37,7 +37,7 @@ class SystemSetting extends Model
             'receipt_footer_company_name' => 'ShaQ Technologies',
             'receipt_footer_phone' => '+923028913283',
             'receipt_footer_email' => 'contact@shaqtechnologies.com',
-            'logo_path' => 'images/shaq-logo.png',
+            'logo_path' => 'images/shaq-logo-web-safe.png',
         ];
     }
 
@@ -59,3 +59,4 @@ class SystemSetting extends Model
         Cache::forget(self::CACHE_KEY);
     }
 }
+

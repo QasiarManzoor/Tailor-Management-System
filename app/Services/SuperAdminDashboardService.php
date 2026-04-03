@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Shop;
 use App\Models\User;
 
 class SuperAdminDashboardService
@@ -14,6 +15,7 @@ class SuperAdminDashboardService
     {
         return [
             'stats' => [
+                'totalShops' => Shop::count(),
                 'totalUsers' => User::count(),
                 'totalOwners' => User::where('role', 'owner')->count(),
                 'totalCustomers' => Customer::count(),
@@ -23,8 +25,8 @@ class SuperAdminDashboardService
                 'pendingBalances' => Order::where('balance_amount', '>', 0)->sum('balance_amount'),
                 'paymentsReceived' => Payment::sum('amount'),
             ],
-            'latestUsers' => User::latest()->take(6)->get(),
-            'latestOrders' => Order::with('customer')->latest()->take(6)->get(),
+            'latestUsers' => User::with('shop')->latest()->take(6)->get(),
+            'latestOrders' => Order::with(['customer', 'shop'])->latest()->take(6)->get(),
             'latestActivityLogs' => ActivityLog::with('user')->latest()->take(10)->get(),
         ];
     }

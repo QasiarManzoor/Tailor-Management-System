@@ -6,11 +6,16 @@ use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    private const MAX_LOGIN_ATTEMPTS = 5;
+    private const LOCKOUT_SECONDS = 300;
+
     public function create(): View
     {
         return view('auth.login');
@@ -23,15 +28,28 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+        $throttleKey = $this->throttleKey($request);
+
+        if (RateLimiter::tooManyAttempts($throttleKey, self::MAX_LOGIN_ATTEMPTS)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+
+            throw ValidationException::withMessages([
+                'email' => 'Too many login attempts. Please try again in '.ceil($seconds / 60).' minute(s).',
+            ]);
+        }
+
         $remember = $request->boolean('remember');
 
         if (! Auth::attempt($credentials, $remember)) {
+            RateLimiter::hit($throttleKey, self::LOCKOUT_SECONDS);
+
             throw ValidationException::withMessages([
                 'email' => 'The provided credentials do not match our records.',
             ]);
         }
 
         $request->session()->regenerate();
+        RateLimiter::clear($throttleKey);
 
         $user = $request->user();
 
@@ -66,4 +84,10 @@ class AuthController extends Controller
 
         return redirect()->route('login');
     }
+
+    protected function throttleKey(Request $request): string
+    {
+        return Str::transliterate(Str::lower($request->string('email')->toString()).'|'.$request->ip());
+    }
 }
+

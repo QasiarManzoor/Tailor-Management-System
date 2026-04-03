@@ -799,11 +799,18 @@
 <div class="container-fluid">
     <div class="row g-0">
         <aside class="col-lg-2 px-3 sidebar">
+            @php
+                $brandShop = $managedShopContext ?: auth()->user()?->shop;
+                $rawBrandLogoPath = $brandShop?->logo_path ?: $systemSettings->logo_path;
+                $brandLogoPath = filled($rawBrandLogoPath) && $rawBrandLogoPath !== 'images/shaq-logo.png' ? $rawBrandLogoPath : 'images/shaq-logo-web-safe.png';
+                $brandShopName = $brandShop?->name ?: $systemSettings->shop_name;
+                $brandTagline = $brandShop?->tagline ?: $systemSettings->shop_tagline;
+            @endphp
             <div class="sidebar-brand">
-                <span class="brand-badge"><img src="{{ asset($systemSettings->logo_path ?: 'images/shaq-logo.png') }}" alt="{{ $systemSettings->shop_name }} logo"></span>
+                <span class="brand-badge"><img src="{{ asset($brandLogoPath) }}" alt="{{ $brandShopName }} logo"></span>
                 <div class="sidebar-brand-copy">
-                    <div class="fw-semibold">{{ $systemSettings->shop_name }}</div>
-                    <small class="text-white-50">{{ $systemSettings->shop_tagline }}</small>
+                    <div class="fw-semibold">{{ $brandShopName }}</div>
+                    <small class="text-white-50">{{ $brandTagline }}</small>
                 </div>
                 <button type="button" class="btn theme-toggle-btn" id="theme-toggle" aria-label="Toggle light and dark theme">
                     <span class="theme-toggle-icon" id="theme-toggle-icon" aria-hidden="true">&#9789;</span>
@@ -818,9 +825,13 @@
                 <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="{{ route('customers.index') }}"><span class="nav-icon">&#9786;</span><span class="nav-label">Customers</span></a>
                 <a class="nav-link {{ request()->routeIs('measurements.*') ? 'active' : '' }}" href="{{ route('measurements.index') }}"><span class="nav-icon">&#9998;</span><span class="nav-label">Measurements</span></a>
                 <a class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}"><span class="nav-icon">&#9636;</span><span class="nav-label">Orders</span></a>
+                @if (auth()->user()?->isOwner() || $managedShopContext)
+                    <a class="nav-link {{ request()->routeIs('shop-header.*') ? 'active' : '' }}" href="{{ route('shop-header.edit') }}"><span class="nav-icon">&#9997;</span><span class="nav-label">Slip Header</span></a>
+                @endif
                 @if (auth()->user()?->isSuperAdmin())
                     <a class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}" href="{{ route('superadmin.dashboard') }}"><span class="nav-icon">&#9881;</span><span class="nav-label">Super Admin Dashboard</span></a>
                     <a class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}" href="{{ route('superadmin.users.index') }}"><span class="nav-icon">&#128101;</span><span class="nav-label">User Management</span></a>
+                    <a class="nav-link {{ request()->routeIs('superadmin.shops.*') ? 'active' : '' }}" href="{{ route('superadmin.shops.index') }}"><span class="nav-icon">&#127970;</span><span class="nav-label">Shop Management</span></a>
                     <a class="nav-link {{ request()->routeIs('superadmin.settings.*') ? 'active' : '' }}" href="{{ route('superadmin.settings.edit') }}"><span class="nav-icon">&#9881;</span><span class="nav-label">System Settings</span></a>
                     <a class="nav-link {{ request()->routeIs('superadmin.activity-logs.*') ? 'active' : '' }}" href="{{ route('superadmin.activity-logs.index') }}"><span class="nav-icon">&#128221;</span><span class="nav-label">Activity Logs</span></a>
                 @endif
@@ -860,6 +871,23 @@
                 </div>
             </div>
 
+            @if (auth()->user()?->isSuperAdmin() && $managedShopContext)
+                <div class="alert alert-warning border-0 shadow-sm rounded-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2" role="alert">
+                    <div>
+                        <div class="fw-semibold mb-1">Managing {{ $managedShopContext->name }}</div>
+                        <div class="small">Business pages are currently scoped to this shop for customers, measurements, orders, payments, and print views.</div>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-dark">Open Shop Dashboard</a>
+                        <form method="POST" action="{{ route('superadmin.shops.clear-manage') }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-dark">Back To Global Admin</button>
+                        </form>
+                    </div>
+                </div>
+            @endif
+
             @if (session('success'))
                 <div class="alert alert-success border-0 shadow-sm rounded-4 alert-dismissible fade show" role="alert">
                     {{ session('success') }}
@@ -877,7 +905,12 @@
             @if ($errors->any())
                 <div class="alert alert-danger border-0 shadow-sm rounded-4">
                     <div class="fw-semibold mb-2">Please review the highlighted fields.</div>
-                    <div class="small">The form could not be saved until the required details are corrected.</div>
+                    <div class="small mb-2">The form could not be saved until the required details are corrected.</div>
+                    <ul class="mb-0 small ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -972,6 +1005,9 @@
 @stack('scripts')
 </body>
 </html>
+
+
+
 
 
 

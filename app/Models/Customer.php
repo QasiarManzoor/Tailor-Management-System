@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToShop;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,9 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class Customer extends Model
 {
+    use BelongsToShop;
     use HasFactory;
 
     protected $fillable = [
+        'shop_id',
         'name',
         'phone',
         'alternate_phone',
@@ -49,7 +52,7 @@ class Customer extends Model
             do {
                 $candidate = sprintf('%s%05d', $prefix, $nextSequence);
                 $nextSequence++;
-            } while (static::where('customer_no', $candidate)->exists());
+            } while (static::withoutGlobalScope('shop')->where('customer_no', $candidate)->exists());
 
             return $candidate;
         }, 3);

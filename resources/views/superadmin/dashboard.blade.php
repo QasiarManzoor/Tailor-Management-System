@@ -2,16 +2,16 @@
 
 @section('title', 'Super Admin Dashboard')
 @section('page-title', 'Super Admin Dashboard')
-@section('page-subtitle', 'Monitor users, orders, activity, and system-wide performance from one place.')
+@section('page-subtitle', 'Monitor users, shops, orders, activity, and system-wide performance from one place.')
 
 @section('content')
     <section class="page-shell d-grid gap-3">
         <div class="row g-3">
             <div class="col-md-6 col-xl-3">
                 <article class="metric-card metric-card--info h-100">
-                    <div class="metric-card__label">Total Users</div>
-                    <div class="metric-card__value">{{ number_format($stats['totalUsers']) }}</div>
-                    <div class="metric-card__meta">Owners: {{ number_format($stats['totalOwners']) }}</div>
+                    <div class="metric-card__label">Total Shops</div>
+                    <div class="metric-card__value">{{ number_format($stats['totalShops']) }}</div>
+                    <div class="metric-card__meta">Users: {{ number_format($stats['totalUsers']) }}</div>
                 </article>
             </div>
             <div class="col-md-6 col-xl-3">
@@ -43,7 +43,7 @@
                     <div class="section-header">
                         <div>
                             <h2 class="section-title mb-0">Latest Users</h2>
-                            <p class="section-copy">Newest accounts and their access level.</p>
+                            <p class="section-copy">Newest accounts, their shop, and access level.</p>
                         </div>
                         <a href="{{ route('superadmin.users.index') }}" class="btn btn-sm btn-outline-secondary">Manage</a>
                     </div>
@@ -54,6 +54,7 @@
                                     <div>
                                         <div class="record-title">{{ $user->name }}</div>
                                         <div class="record-meta">{{ $user->email }}</div>
+                                        <div class="record-meta">{{ $user->shop?->name ?? 'Unassigned shop' }}</div>
                                     </div>
                                     <span class="badge {{ $user->is_active ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis' }} rounded-pill text-uppercase">{{ $user->role }}</span>
                                 </div>
@@ -73,7 +74,7 @@
                     <div class="section-header">
                         <div>
                             <h2 class="section-title mb-0">Latest Orders</h2>
-                            <p class="section-copy">Recent order activity across the shop.</p>
+                            <p class="section-copy">Recent order activity across every shop.</p>
                         </div>
                         <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-secondary">Open Orders</a>
                     </div>
@@ -84,6 +85,7 @@
                                     <div>
                                         <div class="record-title">{{ $order->order_no }}</div>
                                         <div class="record-meta">{{ $order->customer?->name }} · {{ ucfirst($order->status) }}</div>
+                                        <div class="record-meta">{{ $order->shop?->name ?? 'Unassigned shop' }}</div>
                                     </div>
                                     <a href="{{ route('orders.show', $order) }}" class="btn btn-sm btn-outline-secondary">View</a>
                                 </div>

@@ -1,3 +1,8 @@
+ï»¿@php
+    $totalAmountValue = old('total_amount', $order->total_amount !== null ? (int) round((float) $order->total_amount) : null);
+    $advanceAmountValue = old('advance_amount', $order->advance_amount !== null ? (int) round((float) $order->advance_amount) : null);
+@endphp
+
 <div class="row g-4">
     <div class="col-12">
         <div class="form-panel">
@@ -11,7 +16,7 @@
                     <select name="customer_id" id="customer_id" class="form-select @error('customer_id') is-invalid @enderror" required>
                         <option value="">Select customer</option>
                         @foreach ($customers as $customerOption)
-                            <option value="{{ $customerOption->id }}" @selected((int) old('customer_id', $order->customer_id) === $customerOption->id)>{{ $customerOption->customer_no ?: 'No #' }} · {{ $customerOption->name }} · {{ $customerOption->phone }}</option>
+                            <option value="{{ $customerOption->id }}" @selected((int) old('customer_id', $order->customer_id) === $customerOption->id)>{{ $customerOption->customer_no ?: 'No #' }} | {{ $customerOption->name }} | {{ $customerOption->phone }}</option>
                         @endforeach
                     </select>
                     @include('partials.field-error', ['field' => 'customer_id'])
@@ -65,12 +70,12 @@
             <div class="row g-4">
                 <div class="col-md-6">
                     @include('partials.bilingual-text', ['key' => 'tailor.orders.total_amount', 'for' => 'total_amount', 'tag' => 'label', 'class' => 'form-label'])
-                    <input type="number" step="1" min="0" inputmode="numeric" data-integer-input id="total_amount" name="total_amount" value="{{ old('total_amount', $order->total_amount) }}" class="form-control @error('total_amount') is-invalid @enderror" required>
+                    <input type="number" step="1" min="0" inputmode="numeric" data-integer-input id="total_amount" name="total_amount" value="{{ $totalAmountValue }}" class="form-control @error('total_amount') is-invalid @enderror" required>
                     @include('partials.field-error', ['field' => 'total_amount'])
                 </div>
                 <div class="col-md-6">
                     @include('partials.bilingual-text', ['key' => 'tailor.orders.advance_amount', 'for' => 'advance_amount', 'tag' => 'label', 'class' => 'form-label'])
-                    <input type="number" step="1" min="0" inputmode="numeric" data-integer-input id="advance_amount" name="advance_amount" value="{{ old('advance_amount', $order->advance_amount) }}" class="form-control @error('advance_amount') is-invalid @enderror" required>
+                    <input type="number" step="1" min="0" inputmode="numeric" data-integer-input id="advance_amount" name="advance_amount" value="{{ $advanceAmountValue }}" class="form-control @error('advance_amount') is-invalid @enderror" required>
                     <div class="form-text">Extra receipts can be added later from the order details page.</div>
                     @include('partials.field-error', ['field' => 'advance_amount'])
                 </div>

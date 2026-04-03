@@ -48,7 +48,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="logo_path" class="form-label">Logo Asset Path</label>
-                    <input type="text" class="form-control @error('logo_path') is-invalid @enderror" id="logo_path" name="logo_path" value="{{ old('logo_path', $settings->logo_path) }}" placeholder="images/shaq-logo.png">
+                    <input type="text" class="form-control @error('logo_path') is-invalid @enderror" id="logo_path" name="logo_path" value="{{ old('logo_path', $settings->logo_path) }}" placeholder="images/shaq-logo-web-safe.png">
                     @error('logo_path')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>
@@ -82,3 +82,4 @@
         </form>
     </section>
 @endsection
+

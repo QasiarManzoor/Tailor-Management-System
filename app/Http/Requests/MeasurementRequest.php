@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Support\CurrentShop;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MeasurementRequest extends FormRequest
 {
@@ -29,8 +31,14 @@ class MeasurementRequest extends FormRequest
             'cuff',
         ];
 
+        $customerExists = Rule::exists('customers', 'id');
+
+        if ($shopId = CurrentShop::scopeShopId()) {
+            $customerExists = $customerExists->where(fn ($query) => $query->where('shop_id', $shopId));
+        }
+
         $rules = [
-            'customer_id' => ['required', 'exists:customers,id'],
+            'customer_id' => ['required', $customerExists],
             'title' => ['required', 'string', 'max:255'],
             'front_style' => ['nullable', 'string', 'max:255'],
             'collar_style' => ['nullable', 'string', 'max:255'],

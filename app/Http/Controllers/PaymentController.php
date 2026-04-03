@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Support\ActivityLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -31,10 +32,21 @@ class PaymentController extends Controller
                 ->withErrors(['amount' => 'Payment amount cannot be greater than the remaining balance.']);
         }
 
-        $payment = $order->payments()->create($validated);
+        $payment = DB::transaction(function () use ($order, $validated) {
+            $payment = $order->payments()->create([
+                ...$validated,
+                'shop_id' => $order->shop_id,
+            ]);
 
-        $order->advance_amount = (float) $order->advance_amount + (float) $validated['amount'];
-        $order->refreshBalance();
+            $updatedAdvance = (int) $order->advance_amount + (int) $validated['amount'];
+
+            $order->update([
+                'advance_amount' => $updatedAdvance,
+                'balance_amount' => Order::calculateBalance($order->total_amount, $updatedAdvance),
+            ]);
+
+            return $payment;
+        });
 
         ActivityLogger::log('payment.created', 'Payment recorded against an order.', [
             'payment_id' => $payment->id,

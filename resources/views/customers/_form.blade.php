@@ -1,9 +1,21 @@
 <div class="row g-4">
+    @if (auth()->user()?->isSuperAdmin())
+        <div class="col-md-4">
+            <label class="form-label" for="shop_id">Shop</label>
+            <select id="shop_id" name="shop_id" class="form-select @error('shop_id') is-invalid @enderror" required>
+                <option value="">Select shop</option>
+                @foreach ($shops as $shop)
+                    <option value="{{ $shop->id }}" @selected((int) old('shop_id', $customer->shop_id) === $shop->id)>{{ $shop->name }}</option>
+                @endforeach
+            </select>
+            @include('partials.field-error', ['field' => 'shop_id'])
+        </div>
+    @endif
     <div class="col-md-4">
         <label class="form-label">Customer Number</label>
         <input type="text" class="form-control" value="{{ $customer->customer_no ?: 'Auto-generated on save' }}" disabled>
     </div>
-    <div class="col-md-8">
+    <div class="{{ auth()->user()?->isSuperAdmin() ? 'col-md-4' : 'col-md-8' }}">
         <label class="form-label" for="name">Customer Name</label>
         <input type="text" id="name" name="name" value="{{ old('name', $customer->name) }}" class="form-control @error('name') is-invalid @enderror" maxlength="255" required>
         @include('partials.field-error', ['field' => 'name'])

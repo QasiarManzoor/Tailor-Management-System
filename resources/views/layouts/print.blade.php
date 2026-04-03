@@ -74,7 +74,7 @@
         .print-footer-logo {
             display: block;
             width: 100%;
-            height: 32mm;
+            height: 20mm;
             max-width: none;
             max-height: none;
             object-fit: contain;
@@ -202,7 +202,7 @@
         }
         .compact-receipt .print-footer-logo {
             width: 100%;
-            height: 16mm;
+            height: 9mm;
             max-width: none;
             max-height: none;
             object-fit: contain;
@@ -313,6 +313,16 @@
         isset($measurement) => route('measurements.show', $measurement),
         default => route('dashboard'),
     };
+    $printShop = $order->shop ?? $measurement->shop ?? null;
+    $shopName = $printShop?->name ?: $systemSettings->shop_name;
+    $shopTagline = $printShop?->tagline ?: 'FABRIC & TAILOR';
+    $shopPhonePrimary = $printShop?->phone_primary ?: $systemSettings->shop_phone_primary;
+    $shopPhoneSecondary = $printShop?->phone_secondary ?: $systemSettings->shop_phone_secondary;
+    $shopAddressLine1 = $printShop?->address_line_1 ?: $systemSettings->shop_address_line_1;
+    $shopAddressLine2 = $printShop?->address_line_2 ?: $systemSettings->shop_address_line_2;
+    $shopFooterCompany = $printShop?->receipt_footer_company_name ?: $systemSettings->receipt_footer_company_name;
+    $shopFooterPhone = $printShop?->receipt_footer_phone ?: $systemSettings->receipt_footer_phone;
+    $shopFooterEmail = $printShop?->receipt_footer_email ?: $systemSettings->receipt_footer_email;
 @endphp
 <div class="print-shell">
     <div class="print-actions no-print">
@@ -321,16 +331,16 @@
     </div>
     <div class="print-page">
         <div class="shop-header">
-            <div class="shop-title">{{ $systemSettings->shop_name }}</div>
+            <div class="shop-title">{{ $shopName }}</div>
             <div class="shop-meta">
-                <div class="shop-meta-line">FABRIC &amp; TAILOR {{ $systemSettings->shop_phone_primary }}</div>
-                @if ($systemSettings->shop_address_line_1)
-                    <div class="shop-meta-line">{{ $systemSettings->shop_address_line_1 }}</div>
+                <div class="shop-meta-line">{{ $shopTagline }} {{ $shopPhonePrimary }}</div>
+                @if ($shopAddressLine1)
+                    <div class="shop-meta-line">{{ $shopAddressLine1 }}</div>
                 @endif
                 <div class="shop-meta-line">
-                    {{ $systemSettings->shop_address_line_2 }}
-                    @if ($systemSettings->shop_phone_secondary)
-                        Ph:{{ $systemSettings->shop_phone_secondary }}
+                    {{ $shopAddressLine2 }}
+                    @if ($shopPhoneSecondary)
+                        Ph:{{ $shopPhoneSecondary }}
                     @endif
                 </div>
             </div>
@@ -343,9 +353,9 @@
                 <img src="{{ asset($footerBannerPath) }}" alt="Receipt footer banner" class="print-footer-logo">
             @else
                 <div class="print-footer-copy">
-                    <div>{{ $systemSettings->receipt_footer_company_name }}</div>
-                    <div>{{ $systemSettings->receipt_footer_phone }}</div>
-                    <div>{{ $systemSettings->receipt_footer_email }}</div>
+                    <div>{{ $shopFooterCompany }}</div>
+                    <div>{{ $shopFooterPhone }}</div>
+                    <div>{{ $shopFooterEmail }}</div>
                 </div>
             @endif
         </div>
@@ -353,3 +363,6 @@
 </div>
 </body>
 </html>
+
+
+

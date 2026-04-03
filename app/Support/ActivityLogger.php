@@ -12,6 +12,7 @@ class ActivityLogger
         $actor = $user ?? auth()->user();
 
         return ActivityLog::create([
+            'shop_id' => $actor?->shop_id ?? CurrentShop::creationShopId(),
             'user_id' => $actor?->getAuthIdentifier(),
             'action' => $action,
             'description' => $description,

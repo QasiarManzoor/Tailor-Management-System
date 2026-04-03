@@ -87,6 +87,33 @@
             background: rgba(16,25,34,.92);
             color: var(--text);
         }
+        .password-shell {
+            position: relative;
+        }
+        .password-shell .form-control {
+            padding-right: 3.2rem;
+        }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: .6rem;
+            transform: translateY(-50%);
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .password-toggle:hover,
+        .password-toggle:focus {
+            color: var(--text);
+            border-color: var(--accent);
+            outline: none;
+        }
         .btn-login {
             min-height: 2.9rem;
             border-radius: .95rem;
@@ -120,7 +147,10 @@
         <section class="login-card">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
                 <div class="d-flex align-items-center gap-3">
-                    <span class="brand-mark"><img src="{{ asset($systemSettings->logo_path ?: 'images/shaq-logo.png') }}" alt="{{ $systemSettings->shop_name }} logo"></span>
+                    @php
+                        $loginLogoPath = filled($systemSettings->logo_path) && $systemSettings->logo_path !== 'images/shaq-logo.png' ? $systemSettings->logo_path : 'images/shaq-logo-web-safe.png';
+                    @endphp
+                    <span class="brand-mark"><img src="{{ asset($loginLogoPath) }}" alt="{{ $systemSettings->shop_name }} logo"></span>
                     <div>
                         <p class="eyebrow">Tailor Shop Login</p>
                         <h1 class="h3 mb-1">{{ $systemSettings->shop_name }}</h1>
@@ -143,9 +173,12 @@
                 </div>
                 <div>
                     <label for="password" class="form-label small text-uppercase fw-semibold">Password</label>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                    <div class="password-shell">
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                        <button type="button" class="password-toggle" id="password-toggle" aria-label="Show password" title="Show password">&#128065;</button>
+                    </div>
                     @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-check">
@@ -160,6 +193,8 @@
         (function () {
             var root = document.documentElement;
             var toggleButton = document.getElementById('theme-toggle');
+            var passwordInput = document.getElementById('password');
+            var passwordToggle = document.getElementById('password-toggle');
 
             function applyTheme(theme) {
                 var isDark = theme === 'dark';
@@ -169,14 +204,30 @@
                 toggleButton.setAttribute('title', isDark ? 'Switch to light mode' : 'Switch to dark mode');
             }
 
+            function syncPasswordToggle() {
+                var isVisible = passwordInput.type === 'text';
+                passwordToggle.innerHTML = isVisible ? '&#128584;' : '&#128065;';
+                passwordToggle.setAttribute('title', isVisible ? 'Hide password' : 'Show password');
+                passwordToggle.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+            }
+
             applyTheme(root.getAttribute('data-theme') || 'light');
+            syncPasswordToggle();
 
             toggleButton.addEventListener('click', function () {
                 var nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
                 localStorage.setItem('tailor-theme', nextTheme);
                 applyTheme(nextTheme);
             });
+
+            passwordToggle.addEventListener('click', function () {
+                passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+                syncPasswordToggle();
+            });
         })();
     </script>
 </body>
 </html>
+
+
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'common' => [
@@ -33,12 +33,12 @@ return [
             'shoulder' => 'کندھا',
             'sleeve' => 'بازو',
             'collar' => 'کالر',
-            'arm_hole' => 'گلا / آرم ہول',
+            'arm_hole' => 'آرم ہول',
             'shalwar_length' => 'شلوار لمبائی',
             'thigh' => 'ران',
             'knee' => 'گھٹنا',
             'bottom_width' => 'پائنچہ',
-            'cuff' => 'بیلائی / کف',
+            'cuff' => 'کف',
             'front_style' => 'فرنٹ اسٹائل',
             'collar_style' => 'کالر اسٹائل',
             'pocket_style' => 'جیب اسٹائل',

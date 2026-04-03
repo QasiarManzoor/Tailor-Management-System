@@ -1,4 +1,4 @@
-<div class="slip-sheet overflow-hidden">
+ï»¿<div class="slip-sheet overflow-hidden">
     <div class="slip-banner p-4 p-lg-5">
         <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-start">
             <div>
@@ -26,7 +26,7 @@
                             <select id="customer_id" name="customer_id" class="form-select @error('customer_id') is-invalid @enderror" required>
                                 <option value="">Select customer</option>
                                 @foreach ($customers as $customerOption)
-                                    <option value="{{ $customerOption->id }}" data-name="{{ $customerOption->name }}" data-phone="{{ $customerOption->phone }}" @selected((int) old('customer_id', $measurement->customer_id) === $customerOption->id)>{{ $customerOption->customer_no ?: 'No #' }} · {{ $customerOption->name }} · {{ $customerOption->phone }}</option>
+                                    <option value="{{ $customerOption->id }}" data-name="{{ $customerOption->name }}" data-phone="{{ $customerOption->phone }}" @selected((int) old('customer_id', $measurement->customer_id) === $customerOption->id)>{{ $customerOption->customer_no ?: 'No #' }} | {{ $customerOption->name }} | {{ $customerOption->phone }}</option>
                                 @endforeach
                             </select>
                             @include('partials.field-error', ['field' => 'customer_id'])

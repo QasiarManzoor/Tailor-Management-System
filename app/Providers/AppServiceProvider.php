@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use App\Models\SystemSetting;
-use App\Support\DefaultUserProvisioner;
+use App\Support\CurrentShop;
+use App\Support\DefaultShopProvisioner;
 use Illuminate\Database\QueryException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
@@ -22,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         try {
-            Cache::remember('bootstrap.default-super-admin', now()->addMinutes(10), function (): bool {
-                DefaultUserProvisioner::ensureSuperAdminExists();
+            Cache::remember('bootstrap.default-shop', now()->addMinutes(10), function (): bool {
+                DefaultShopProvisioner::ensureDefaultShopExists();
 
                 return true;
             });
@@ -33,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer(['layouts.app', 'layouts.print', 'auth.login'], function ($view) {
             $view->with('systemSettings', SystemSetting::current());
+            $view->with('managedShopContext', CurrentShop::contextShop());
         });
     }
 }

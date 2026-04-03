@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Measurement;
 use App\Models\Order;
+use App\Support\CurrentShop;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,9 +17,17 @@ class OrderRequest extends FormRequest
 
     public function rules(): array
     {
+        $customerExists = Rule::exists('customers', 'id');
+        $measurementExists = Rule::exists('measurements', 'id');
+
+        if ($shopId = CurrentShop::scopeShopId()) {
+            $customerExists = $customerExists->where(fn ($query) => $query->where('shop_id', $shopId));
+            $measurementExists = $measurementExists->where(fn ($query) => $query->where('shop_id', $shopId));
+        }
+
         return [
-            'customer_id' => ['required', 'exists:customers,id'],
-            'measurement_id' => ['nullable', 'exists:measurements,id'],
+            'customer_id' => ['required', $customerExists],
+            'measurement_id' => ['nullable', $measurementExists],
             'order_type' => ['required', 'string', 'max:255'],
             'fabric_details' => ['nullable', 'string'],
             'quantity' => ['required', 'integer', 'min:1'],
@@ -58,7 +67,8 @@ class OrderRequest extends FormRequest
             $measurementId = $this->input('measurement_id');
 
             if ($customerId && $measurementId) {
-                $exists = Measurement::whereKey($measurementId)
+                $exists = Measurement::query()
+                    ->whereKey($measurementId)
                     ->where('customer_id', $customerId)
                     ->exists();
 

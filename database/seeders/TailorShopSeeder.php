@@ -5,14 +5,18 @@ namespace Database\Seeders;
 use App\Models\Customer;
 use App\Models\Measurement;
 use App\Models\Order;
+use App\Support\DefaultShopProvisioner;
 use Illuminate\Database\Seeder;
 
 class TailorShopSeeder extends Seeder
 {
     public function run(): void
     {
+        $defaultShop = DefaultShopProvisioner::ensureDefaultShopExists();
+
         $customers = collect([
             [
+                'shop_id' => $defaultShop->id,
                 'name' => 'Muhammad Rashid',
                 'phone' => '03001234567',
                 'alternate_phone' => '03111234567',
@@ -21,6 +25,7 @@ class TailorShopSeeder extends Seeder
                 'notes' => 'Prefers classic collar and loose fitting.',
             ],
             [
+                'shop_id' => $defaultShop->id,
                 'name' => 'Ayesha Khalid',
                 'phone' => '03019876543',
                 'alternate_phone' => null,
@@ -29,6 +34,7 @@ class TailorShopSeeder extends Seeder
                 'notes' => 'Usually books 3-piece suits before Eid.',
             ],
             [
+                'shop_id' => $defaultShop->id,
                 'name' => 'Usman Tariq',
                 'phone' => '03214567890',
                 'alternate_phone' => null,
@@ -39,6 +45,7 @@ class TailorShopSeeder extends Seeder
         ])->map(fn (array $attributes) => Customer::create($attributes));
 
         $measurementOne = Measurement::create([
+            'shop_id' => $defaultShop->id,
             'customer_id' => $customers[0]->id,
             'title' => 'Summer Suit 2026',
             'kameez_length' => 41,
@@ -62,6 +69,7 @@ class TailorShopSeeder extends Seeder
         ]);
 
         $measurementTwo = Measurement::create([
+            'shop_id' => $defaultShop->id,
             'customer_id' => $customers[1]->id,
             'title' => 'Party Wear',
             'kameez_length' => 44,
@@ -84,6 +92,7 @@ class TailorShopSeeder extends Seeder
         ]);
 
         $orderOne = Order::create([
+            'shop_id' => $defaultShop->id,
             'customer_id' => $customers[0]->id,
             'measurement_id' => $measurementOne->id,
             'order_type' => '2 x Shalwar Kameez',
@@ -99,6 +108,7 @@ class TailorShopSeeder extends Seeder
         ]);
 
         $orderOne->payments()->create([
+            'shop_id' => $defaultShop->id,
             'amount' => 1000,
             'payment_method' => 'cash',
             'payment_date' => now()->subDay()->toDateString(),
@@ -108,6 +118,7 @@ class TailorShopSeeder extends Seeder
         $orderOne->refreshBalance();
 
         Order::create([
+            'shop_id' => $defaultShop->id,
             'customer_id' => $customers[1]->id,
             'measurement_id' => $measurementTwo->id,
             'order_type' => '1 x Fancy Suit',
@@ -123,6 +134,7 @@ class TailorShopSeeder extends Seeder
         ]);
 
         Order::create([
+            'shop_id' => $defaultShop->id,
             'customer_id' => $customers[2]->id,
             'measurement_id' => null,
             'order_type' => '3 x Office Uniform',
