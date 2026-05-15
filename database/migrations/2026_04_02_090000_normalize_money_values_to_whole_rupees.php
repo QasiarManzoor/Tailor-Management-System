@@ -18,7 +18,7 @@ return new class extends Migration
             ]);
 
             DB::table('orders')->update([
-                'balance_amount' => DB::raw('GREATEST(total_amount - advance_amount, 0)'),
+                'balance_amount' => DB::raw('CASE WHEN total_amount - advance_amount > 0 THEN total_amount - advance_amount ELSE 0 END'),
             ]);
         });
     }
