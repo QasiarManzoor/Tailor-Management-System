@@ -30,6 +30,8 @@
         @endforeach
     </div>
 
+    @include('dashboard._work_alerts')
+
     <div class="row g-4">
         <div class="col-lg-7">
             <div class="card card-soft h-100">

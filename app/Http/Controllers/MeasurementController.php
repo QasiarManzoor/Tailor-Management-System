@@ -37,12 +37,31 @@ class MeasurementController extends Controller
 
     public function create(Request $request): View
     {
+        $copySource = null;
+        $measurement = new Measurement([
+            'customer_id' => $request->integer('customer_id') ?: null,
+        ]);
+
+        if ($request->integer('copy_from')) {
+            $copySource = Measurement::with('customer')->findOrFail($request->integer('copy_from'));
+            $measurement = $copySource->replicate();
+            $measurement->title = $copySource->title.' Copy';
+            $measurement->customer_id = $request->integer('customer_id') ?: $copySource->customer_id;
+            $measurement->shop_id = $copySource->shop_id;
+        }
+
         return view('measurements.create', [
-            'measurement' => new Measurement([
-                'customer_id' => $request->integer('customer_id') ?: null,
-            ]),
+            'measurement' => $measurement,
+            'copySource' => $copySource,
             'customers' => Customer::orderBy('name')->get(),
             'measurementDate' => now()->toDateString(),
+        ]);
+    }
+
+    public function copy(Measurement $measurement): RedirectResponse
+    {
+        return redirect()->route('measurements.create', [
+            'copy_from' => $measurement->id,
         ]);
     }
 

@@ -73,9 +73,29 @@ class Order extends Model
             $order->balance_amount = static::calculateBalance($order->total_amount, $order->advance_amount);
         });
 
+        static::created(function (Order $order) {
+            $order->statusHistory()->create([
+                'changed_by' => auth()->id(),
+                'from_status' => null,
+                'to_status' => $order->status,
+            ]);
+        });
+
         static::updating(function (Order $order) {
             $order->shop_id = static::resolveShopId($order);
             $order->balance_amount = static::calculateBalance($order->total_amount, $order->advance_amount);
+        });
+
+        static::updated(function (Order $order) {
+            if (! $order->wasChanged('status')) {
+                return;
+            }
+
+            $order->statusHistory()->create([
+                'changed_by' => auth()->id(),
+                'from_status' => $order->getOriginal('status'),
+                'to_status' => $order->status,
+            ]);
         });
     }
 
@@ -159,6 +179,11 @@ class Order extends Model
         return $this->hasMany(Payment::class)->latest('payment_date')->latest();
     }
 
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class)->oldest();
+    }
+
     public function refreshBalance(): void
     {
         $this->balance_amount = static::calculateBalance($this->total_amount, $this->advance_amount);
@@ -175,5 +200,73 @@ class Order extends Model
         return $this->delivery_date
             && $this->delivery_date->isPast()
             && ! in_array($this->status, ['delivered', 'cancelled'], true);
+    }
+
+    public function whatsappReceiptUrl(): ?string
+    {
+        return $this->whatsappUrl(sprintf(
+            "Assalam o Alaikum %s, your order %s has been booked. Total: Rs. %s, advance: Rs. %s, balance: Rs. %s. Delivery date: %s.",
+            $this->customer?->name,
+            $this->order_no,
+            number_format((float) $this->total_amount, 0),
+            number_format((float) $this->advance_amount, 0),
+            number_format((float) $this->balance_amount, 0),
+            $this->delivery_date?->format('d M Y') ?: 'not set'
+        ));
+    }
+
+    public function whatsappDeliveryReminderUrl(): ?string
+    {
+        return $this->whatsappUrl(sprintf(
+            "Assalam o Alaikum %s, reminder for order %s. Delivery date is %s and current status is %s.",
+            $this->customer?->name,
+            $this->order_no,
+            $this->delivery_date?->format('d M Y') ?: 'not set',
+            str_replace('_', ' ', $this->status)
+        ));
+    }
+
+    public function whatsappPaymentReminderUrl(): ?string
+    {
+        if ((float) $this->balance_amount <= 0) {
+            return null;
+        }
+
+        return $this->whatsappUrl(sprintf(
+            "Assalam o Alaikum %s, payment reminder for order %s. Remaining balance is Rs. %s.",
+            $this->customer?->name,
+            $this->order_no,
+            number_format((float) $this->balance_amount, 0)
+        ));
+    }
+
+    protected function whatsappUrl(string $message): ?string
+    {
+        $phone = static::normalizeWhatsappPhone($this->customer?->phone);
+
+        if (! $phone) {
+            return null;
+        }
+
+        return 'https://wa.me/'.$phone.'?text='.rawurlencode($message);
+    }
+
+    protected static function normalizeWhatsappPhone(?string $phone): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+
+        if ($digits === '') {
+            return null;
+        }
+
+        if (str_starts_with($digits, '00')) {
+            return substr($digits, 2);
+        }
+
+        if (str_starts_with($digits, '0')) {
+            return '92'.substr($digits, 1);
+        }
+
+        return $digits;
     }
 }

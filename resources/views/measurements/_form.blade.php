@@ -20,6 +20,13 @@
                         <h2 class="form-panel-title">Customer And Slip Setup</h2>
                         <p class="form-panel-copy">Choose the customer, name the slip, and verify the quick customer preview before filling measurements.</p>
                     </div>
+                    @isset($copySource)
+                        @if ($copySource)
+                            <div class="alert alert-success border-0 rounded-4 mb-3">
+                                Copied from {{ $copySource->title }} for {{ $copySource->customer?->name }}. Adjust any fields and save as a new measurement.
+                            </div>
+                        @endif
+                    @endisset
                     <div class="row g-4">
                         <div class="col-lg-5">
                             @include('partials.bilingual-text', ['key' => 'tailor.common.customer', 'for' => 'customer_id', 'tag' => 'label', 'class' => 'form-label'])

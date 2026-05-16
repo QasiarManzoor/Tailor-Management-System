@@ -867,6 +867,12 @@
                     </div>
                 @endif
                 <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center{{ $showPageCopy ? '' : ' ms-md-auto' }}">
+                    @auth
+                        <form method="GET" action="{{ route('global-search.index') }}" class="d-flex gap-2 align-items-center" role="search">
+                            <input type="search" name="q" value="{{ request('q') }}" class="form-control" style="min-width: min(18rem, 58vw);" placeholder="Search customers, orders, phones">
+                            <button class="btn btn-outline-dark">Search</button>
+                        </form>
+                    @endauth
                     @yield('page-actions')
                 </div>
             </div>

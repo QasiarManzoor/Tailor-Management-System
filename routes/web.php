@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -27,10 +28,12 @@ Route::post('/logout', [AuthController::class, 'destroy'])
 
 Route::middleware(['auth', 'role:super_admin,owner'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/search', GlobalSearchController::class)->name('global-search.index');
     Route::get('/shop-header', [ShopHeaderController::class, 'edit'])->name('shop-header.edit');
     Route::put('/shop-header', [ShopHeaderController::class, 'update'])->name('shop-header.update');
 
     Route::resource('customers', CustomerController::class);
+    Route::get('measurements/{measurement}/copy', [MeasurementController::class, 'copy'])->name('measurements.copy');
     Route::resource('measurements', MeasurementController::class);
     Route::get('measurements/{measurement}/print', [MeasurementController::class, 'print'])->name('measurements.print');
     Route::resource('orders', OrderController::class);
