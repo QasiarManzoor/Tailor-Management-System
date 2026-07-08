@@ -28,12 +28,12 @@ class SystemSetting extends Model
     public static function defaults(): array
     {
         return [
-            'shop_name' => 'MASTER RASHID',
+            'shop_name' => 'XYZ Tailor Shop',
             'shop_tagline' => 'Digital Order Slip',
-            'shop_phone_primary' => '0313-5271056',
-            'shop_phone_secondary' => '057-6108185',
-            'shop_address_line_1' => 'Shop # 4, Faizan Plaza, Upside Mezan Bank Basement',
-            'shop_address_line_2' => 'Near Soneri Bank Main PWD Islamabad',
+            'shop_phone_primary' => null,
+            'shop_phone_secondary' => null,
+            'shop_address_line_1' => null,
+            'shop_address_line_2' => null,
             'receipt_footer_company_name' => 'ShaQ Technologies',
             'receipt_footer_phone' => '+923028913283',
             'receipt_footer_email' => 'contact@shaqtechnologies.com',

@@ -7,13 +7,10 @@
 @section('content')
     <div class="filters-shell mb-4">
         <div class="card-body p-4">
-            <form method="GET" action="{{ route('global-search.index') }}" class="row g-3 align-items-end">
+            <form method="GET" action="{{ route('global-search.index') }}" class="row g-3 align-items-end" data-auto-search-form="page">
                 <div class="col-md-8">
                     <label class="form-label" for="q">Search Everything</label>
-                    <input type="search" id="q" name="q" value="{{ $query }}" class="form-control" placeholder="Customer name, phone, customer number, order number, or measurement title" autofocus>
-                </div>
-                <div class="col-auto">
-                    <button class="btn btn-dark">Search</button>
+                    <input type="search" id="q" name="q" value="{{ $query }}" class="form-control" placeholder="Customer name, phone, customer number, order number, or measurement title" autocomplete="off" autofocus data-auto-search-input>
                 </div>
             </form>
         </div>

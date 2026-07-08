@@ -33,7 +33,30 @@
                     <label class="form-label">Order Number</label>
                     <input type="text" class="form-control" value="{{ $order->order_no ?: 'Auto-generated on save' }}" disabled>
                 </div>
-                <input type="hidden" id="order_type" name="order_type" value="{{ old('order_type', $order->order_type ?: 'Tailoring Order') }}">
+                <div class="col-md-4">
+                    <label class="form-label" for="work_category">Work Category</label>
+                    <select id="work_category" name="work_category" class="form-select @error('work_category') is-invalid @enderror" required>
+                        @foreach ($workCategories as $category)
+                            <option value="{{ $category }}" @selected(old('work_category', $order->work_category ?: 'new_stitch') === $category)>{{ ucwords(str_replace('_', ' ', $category)) }}</option>
+                        @endforeach
+                    </select>
+                    @include('partials.field-error', ['field' => 'work_category'])
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="order_type">Order Type</label>
+                    <input type="text" id="order_type" name="order_type" value="{{ old('order_type', $order->order_type ?: 'Tailoring Order') }}" class="form-control @error('order_type') is-invalid @enderror" required>
+                    @include('partials.field-error', ['field' => 'order_type'])
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="worker_id">Assigned Worker</label>
+                    <select id="worker_id" name="worker_id" class="form-select @error('worker_id') is-invalid @enderror">
+                        <option value="">Unassigned</option>
+                        @foreach ($workers as $worker)
+                            <option value="{{ $worker->id }}" @selected((int) old('worker_id', $order->worker_id) === $worker->id)>{{ $worker->name }} - {{ ucfirst($worker->role) }}</option>
+                        @endforeach
+                    </select>
+                    @include('partials.field-error', ['field' => 'worker_id'])
+                </div>
                 <div class="col-md-4">
                     <label class="form-label" for="quantity">Quantity</label>
                     <input type="number" min="1" step="1" inputmode="numeric" data-integer-input id="quantity" name="quantity" value="{{ old('quantity', $order->quantity ?: 1) }}" class="form-control @error('quantity') is-invalid @enderror" required>
@@ -105,6 +128,15 @@
                     @include('partials.field-error', ['field' => 'trial_date'])
                 </div>
                 <div class="col-md-6">
+                    <label class="form-label" for="trial_status">Trial Status</label>
+                    <select id="trial_status" name="trial_status" class="form-select @error('trial_status') is-invalid @enderror" required>
+                        @foreach ($trialStatuses as $trialStatus)
+                            <option value="{{ $trialStatus }}" @selected(old('trial_status', $order->trial_status ?: 'not_required') === $trialStatus)>{{ ucwords(str_replace('_', ' ', $trialStatus)) }}</option>
+                        @endforeach
+                    </select>
+                    @include('partials.field-error', ['field' => 'trial_status'])
+                </div>
+                <div class="col-md-6">
                     @include('partials.bilingual-text', ['key' => 'tailor.orders.delivery_date', 'for' => 'delivery_date', 'tag' => 'label', 'class' => 'form-label'])
                     <input type="date" id="delivery_date" name="delivery_date" value="{{ old('delivery_date', optional($order->delivery_date)->format('Y-m-d') ?: $order->delivery_date) }}" class="form-control @error('delivery_date') is-invalid @enderror" required>
                     @include('partials.field-error', ['field' => 'delivery_date'])
@@ -134,6 +166,11 @@
                     <label class="form-label" for="special_instructions">Special Instructions</label>
                     <textarea id="special_instructions" name="special_instructions" rows="5" class="form-control @error('special_instructions') is-invalid @enderror" placeholder="Neck design, cuff notes, urgency, delivery reminders">{{ old('special_instructions', $order->special_instructions) }}</textarea>
                     @include('partials.field-error', ['field' => 'special_instructions'])
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="alteration_notes">Alteration / Repair Notes</label>
+                    <textarea id="alteration_notes" name="alteration_notes" rows="4" class="form-control @error('alteration_notes') is-invalid @enderror" placeholder="Required changes, repair details, fitting issues, or alteration instructions">{{ old('alteration_notes', $order->alteration_notes) }}</textarea>
+                    @include('partials.field-error', ['field' => 'alteration_notes'])
                 </div>
             </div>
         </div>

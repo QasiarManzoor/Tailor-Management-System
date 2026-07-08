@@ -79,6 +79,12 @@
                 </div>
             </div>
 
+            @include('orders._operations_panel')
+
+            @include('orders._production_checklist')
+
+            @include('orders._attachments')
+
             @include('orders._communication_actions')
 
             @include('orders._status_timeline')

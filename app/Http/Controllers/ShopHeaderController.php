@@ -34,12 +34,15 @@ class ShopHeaderController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'tagline' => ['required', 'string', 'max:255'],
-            'phone_primary' => ['required', 'string', 'max:255'],
-            'phone_secondary' => ['required', 'string', 'max:255'],
-            'address_line_1' => ['required', 'string', 'max:255'],
-            'address_line_2' => ['required', 'string', 'max:255'],
+            'tagline' => ['nullable', 'string', 'max:255'],
+            'phone_primary' => ['nullable', 'string', 'max:255'],
+            'phone_secondary' => ['nullable', 'string', 'max:255'],
+            'address_line_1' => ['nullable', 'string', 'max:255'],
+            'address_line_2' => ['nullable', 'string', 'max:255'],
             'logo_path' => ['nullable', 'string', 'max:255'],
+            'receipt_footer_company_name' => ['nullable', 'string', 'max:255'],
+            'receipt_footer_phone' => ['nullable', 'string', 'max:255'],
+            'receipt_footer_email' => ['nullable', 'email', 'max:255'],
         ]);
 
         $shop->update($validated);
@@ -50,7 +53,7 @@ class ShopHeaderController extends Controller
             'logo_path' => $shop->logo_path,
         ]);
 
-        return redirect()->route('shop-header.edit')->with('success', 'Slip header updated successfully.');
+        return redirect()->route('shop-header.edit')->with('success', 'Shop profile updated successfully.');
     }
 
     protected function resolveShop(Request $request): ?Shop

@@ -15,6 +15,17 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public const ROLES = [
+        'super_admin' => 'Super Admin',
+        'owner' => 'Owner',
+        'cashier' => 'Cashier',
+        'receptionist' => 'Receptionist',
+        'cutter' => 'Cutter',
+        'stitcher' => 'Stitcher',
+    ];
+
+    public const BUSINESS_ROLES = ['super_admin', 'owner', 'cashier', 'receptionist', 'cutter', 'stitcher'];
+
     protected $fillable = [
         'shop_id',
         'name',
@@ -42,6 +53,11 @@ class User extends Authenticatable
     public function isOwner(): bool
     {
         return $this->role === 'owner';
+    }
+
+    public function isStaff(): bool
+    {
+        return in_array($this->role, ['cashier', 'receptionist', 'cutter', 'stitcher'], true);
     }
 
     public function activityLogs(): HasMany

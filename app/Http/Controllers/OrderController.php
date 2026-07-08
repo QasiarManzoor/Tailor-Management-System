@@ -7,7 +7,9 @@ use App\Models\Customer;
 use App\Models\Measurement;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Worker;
 use App\Support\ActivityLogger;
+use App\Support\FastSearch;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,17 +28,7 @@ class OrderController extends Controller
 
         $orders = Order::with(['customer', 'measurement'])
             ->when($filters['order_no'] !== '', function ($query) use ($filters) {
-                $search = $filters['order_no'];
-
-                $query->where(function ($innerQuery) use ($search) {
-                    $innerQuery->where('order_no', 'like', '%'.$search.'%')
-                        ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                            $customerQuery->where('customer_no', 'like', '%'.$search.'%')
-                                ->orWhere('name', 'like', '%'.$search.'%')
-                                ->orWhere('phone', 'like', '%'.$search.'%')
-                                ->orWhere('alternate_phone', 'like', '%'.$search.'%');
-                        });
-                });
+                FastSearch::orders($query, $filters['order_no']);
             })
             ->when($filters['customer_id'], fn ($query) => $query->where('customer_id', $filters['customer_id']))
             ->when($filters['status'] !== '', fn ($query) => $query->where('status', $filters['status']))
@@ -66,13 +58,18 @@ class OrderController extends Controller
                 'delivery_date' => now()->addDays(7)->toDateString(),
                 'status' => 'booked',
                 'priority' => 'normal',
+                'work_category' => 'new_stitch',
+                'trial_status' => 'not_required',
                 'quantity' => 1,
                 'advance_amount' => 0,
             ]),
             'customers' => $customers,
+            'workers' => Worker::where('is_active', true)->orderBy('name')->get(),
             'measurementMap' => $this->measurementMap($customers),
             'statuses' => Order::STATUSES,
             'priorities' => Order::PRIORITIES,
+            'workCategories' => Order::WORK_CATEGORIES,
+            'trialStatuses' => Order::TRIAL_STATUSES,
         ]);
     }
 
@@ -93,11 +90,12 @@ class OrderController extends Controller
 
     public function show(Order $order): View
     {
-        $order->load(['customer', 'measurement', 'payments', 'statusHistory.user']);
+        $order->load(['customer', 'measurement', 'worker', 'payments', 'statusHistory.user', 'checklistItems', 'attachments']);
 
         return view('orders.show', [
             'order' => $order,
             'paymentMethods' => Payment::METHODS,
+            'attachmentTypes' => \App\Models\OrderAttachment::TYPES,
         ]);
     }
 
@@ -138,9 +136,12 @@ class OrderController extends Controller
         return view('orders.edit', [
             'order' => $order,
             'customers' => $customers,
+            'workers' => Worker::where('is_active', true)->orderBy('name')->get(),
             'measurementMap' => $this->measurementMap($customers),
             'statuses' => Order::STATUSES,
             'priorities' => Order::PRIORITIES,
+            'workCategories' => Order::WORK_CATEGORIES,
+            'trialStatuses' => Order::TRIAL_STATUSES,
         ]);
     }
 

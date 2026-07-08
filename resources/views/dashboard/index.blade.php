@@ -17,7 +17,7 @@
             ['label' => 'Ready Orders', 'value' => $stats['readyOrders'], 'note' => 'Ready for handover', 'icon' => '&#10003;', 'tone' => 'success'],
             ['label' => 'Deliveries Today', 'value' => $stats['deliveriesToday'], 'note' => 'Expected for today', 'icon' => '&#9719;', 'tone' => 'info'],
             ['label' => 'Overdue Orders', 'value' => $stats['overdueOrders'], 'note' => 'Require urgent attention', 'icon' => '&#9888;', 'tone' => 'danger'],
-            ['label' => 'Pending Payments', 'value' => $stats['pendingPayments'], 'note' => 'Balances still to collect', 'icon' => '&#8377;', 'tone' => 'warning'],
+            ['label' => 'Pending Payments', 'value' => $stats['pendingPayments'], 'note' => 'Balances still to collect', 'icon' => '$', 'tone' => 'warning'],
         ] as $card)
             <div class="col-md-6 col-xl">
                 <div class="card card-soft metric-card stat-card stat-card--{{ $card['tone'] }} h-100">

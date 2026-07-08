@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MeasurementRequest;
 use App\Models\Customer;
 use App\Models\Measurement;
+use App\Support\FastSearch;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,13 +18,7 @@ class MeasurementController extends Controller
 
         $measurements = Measurement::with('customer')
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($innerQuery) use ($search) {
-                    $innerQuery->where('title', 'like', '%'.$search.'%')
-                        ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                            $customerQuery->where('name', 'like', '%'.$search.'%')
-                                ->orWhere('phone', 'like', '%'.$search.'%');
-                        });
-                });
+                FastSearch::measurements($query, $search);
             })
             ->latest()
             ->paginate(12)

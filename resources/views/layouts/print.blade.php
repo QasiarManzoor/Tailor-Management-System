@@ -305,9 +305,6 @@
 </head>
 <body class="@yield('body-class')">
 @php
-    $footerBannerPath = 'images/shaq-technologies-botton-logo.png';
-    $footerBannerAbsolutePath = public_path($footerBannerPath);
-    $hasFooterBanner = file_exists($footerBannerAbsolutePath);
     $backUrl = match (true) {
         isset($order) => route('orders.show', $order),
         isset($measurement) => route('measurements.show', $measurement),
@@ -315,14 +312,18 @@
     };
     $printShop = $order->shop ?? $measurement->shop ?? null;
     $shopName = $printShop?->name ?: $systemSettings->shop_name;
-    $shopTagline = $printShop?->tagline ?: 'FABRIC & TAILOR';
+    $shopTagline = $printShop?->tagline ?: $systemSettings->shop_tagline;
     $shopPhonePrimary = $printShop?->phone_primary ?: $systemSettings->shop_phone_primary;
     $shopPhoneSecondary = $printShop?->phone_secondary ?: $systemSettings->shop_phone_secondary;
     $shopAddressLine1 = $printShop?->address_line_1 ?: $systemSettings->shop_address_line_1;
     $shopAddressLine2 = $printShop?->address_line_2 ?: $systemSettings->shop_address_line_2;
-    $shopFooterCompany = $printShop?->receipt_footer_company_name ?: $systemSettings->receipt_footer_company_name;
-    $shopFooterPhone = $printShop?->receipt_footer_phone ?: $systemSettings->receipt_footer_phone;
-    $shopFooterEmail = $printShop?->receipt_footer_email ?: $systemSettings->receipt_footer_email;
+    $companyFooterName = $systemSettings->receipt_footer_company_name;
+    $companyFooterPhone = $systemSettings->receipt_footer_phone;
+    $companyFooterEmail = $systemSettings->receipt_footer_email;
+    $hasCompanyFooterText = filled($companyFooterName) || filled($companyFooterPhone) || filled($companyFooterEmail);
+    $footerBannerPath = 'images/shaq-technologies-botton-logo.png';
+    $footerBannerAbsolutePath = public_path($footerBannerPath);
+    $hasFooterBanner = file_exists($footerBannerAbsolutePath);
 @endphp
 <div class="print-shell">
     <div class="print-actions no-print">
@@ -351,11 +352,17 @@
         <div class="print-footer">
             @if ($hasFooterBanner)
                 <img src="{{ asset($footerBannerPath) }}" alt="Receipt footer banner" class="print-footer-logo">
-            @else
+            @elseif ($hasCompanyFooterText)
                 <div class="print-footer-copy">
-                    <div>{{ $shopFooterCompany }}</div>
-                    <div>{{ $shopFooterPhone }}</div>
-                    <div>{{ $shopFooterEmail }}</div>
+                    @if ($companyFooterName)
+                        <div>{{ $companyFooterName }}</div>
+                    @endif
+                    @if ($companyFooterPhone)
+                        <div>{{ $companyFooterPhone }}</div>
+                    @endif
+                    @if ($companyFooterEmail)
+                        <div>{{ $companyFooterEmail }}</div>
+                    @endif
                 </div>
             @endif
         </div>

@@ -180,7 +180,7 @@ class UserController extends Controller
             'new_shop_receipt_footer_email' => ['nullable', 'email', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user?->id)],
-            'role' => ['required', Rule::in(['super_admin', 'owner'])],
+            'role' => ['required', Rule::in(array_keys(User::ROLES))],
             'password' => [$user ? 'nullable' : 'required', 'confirmed', Password::min(8)],
             'is_active' => ['nullable', 'boolean'],
         ];

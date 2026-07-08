@@ -6,6 +6,7 @@ use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
 use App\Models\Shop;
 use App\Support\ActivityLogger;
+use App\Support\FastSearch;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,12 +20,7 @@ class CustomerController extends Controller
         $customers = Customer::query()
             ->withCount(['measurements', 'orders'])
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($innerQuery) use ($search) {
-                    $innerQuery->where('customer_no', 'like', '%'.$search.'%')
-                        ->orWhere('name', 'like', '%'.$search.'%')
-                        ->orWhere('phone', 'like', '%'.$search.'%')
-                        ->orWhere('alternate_phone', 'like', '%'.$search.'%');
-                });
+                FastSearch::customers($query, $search);
             })
             ->orderBy('name')
             ->paginate(12)

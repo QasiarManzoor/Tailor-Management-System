@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Customer;
 use App\Models\Measurement;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,11 +22,11 @@ class ExampleTest extends TestCase
 
     public function test_the_dashboard_page_loads(): void
     {
-        $response = $this->get('/');
+        $response = $this->actingAs($this->owner())->get(route('dashboard'));
 
         $response->assertOk();
         $response->assertSee('Shop Dashboard');
-        $response->assertSee('Pending Balance Widget');
+        $response->assertSee('Pending Balance');
     }
 
     public function test_core_pages_load_without_errors(): void
@@ -35,9 +36,16 @@ class ExampleTest extends TestCase
         $order = Order::firstOrFail();
 
         $pages = [
+            route('dashboard'),
+            route('reports.index'),
+            route('calendar.index'),
+            route('inventory.index'),
+            route('workers.index'),
+            route('cashbook.index'),
             route('customers.index'),
             route('customers.create'),
             route('customers.show', $customer),
+            route('customers.ledger', $customer),
             route('customers.edit', $customer),
             route('measurements.index'),
             route('measurements.create', ['customer_id' => $customer->id]),
@@ -45,6 +53,7 @@ class ExampleTest extends TestCase
             route('measurements.edit', $measurement),
             route('measurements.print', $measurement),
             route('orders.index'),
+            route('orders.kanban'),
             route('orders.create', ['customer_id' => $customer->id]),
             route('orders.show', $order),
             route('orders.edit', $order),
@@ -54,22 +63,26 @@ class ExampleTest extends TestCase
         ];
 
         foreach ($pages as $page) {
-            $this->get($page)->assertOk();
+            $this->actingAs($this->owner())->get($page)->assertOk();
         }
+
+        $this->actingAs(User::where('email', 'admin@shaqtechnologies.com')->firstOrFail())
+            ->get(route('superadmin.backups.index'))
+            ->assertOk();
     }
 
     public function test_measurement_pages_show_bilingual_labels(): void
     {
         $measurement = Measurement::firstOrFail();
 
-        $this->get(route('measurements.create'))
+        $this->actingAs($this->owner())->get(route('measurements.create'))
             ->assertOk()
             ->assertSee('Kameez Length')
             ->assertSee('لمبائی')
             ->assertSee('Special Notes')
             ->assertSee('خصوصی ہدایات');
 
-        $this->get(route('measurements.show', $measurement))
+        $this->actingAs($this->owner())->get(route('measurements.show', $measurement))
             ->assertOk()
             ->assertSee('Chest')
             ->assertSee('چھاتی')
@@ -82,17 +95,22 @@ class ExampleTest extends TestCase
         $measurement = Measurement::firstOrFail();
         $order = Order::firstOrFail();
 
-        $this->get(route('measurements.print', $measurement))
+        $this->actingAs($this->owner())->get(route('measurements.print', $measurement))
             ->assertOk()
             ->assertSee('Print')
-            ->assertSee('Rashid Tailor Shop');
+            ->assertSee('XYZ Tailor Shop');
 
-        $this->get(route('orders.receipt', $order))
+        $this->actingAs($this->owner())->get(route('orders.receipt', $order))
             ->assertOk()
             ->assertSee('Payment Summary');
 
-        $this->get(route('orders.invoice', $order))
+        $this->actingAs($this->owner())->get(route('orders.invoice', $order))
             ->assertOk()
             ->assertSee('Invoice / Delivery Slip');
+    }
+
+    private function owner(): User
+    {
+        return User::where('email', 'owner@shop.com')->firstOrFail();
     }
 }

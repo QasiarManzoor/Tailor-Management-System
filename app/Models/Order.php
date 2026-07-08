@@ -30,6 +30,34 @@ class Order extends Model
         'urgent',
     ];
 
+    public const WORK_CATEGORIES = [
+        'new_stitch',
+        'alteration',
+        'repair',
+        'resizing',
+        'button_work',
+        'trouser_shortening',
+    ];
+
+    public const TRIAL_STATUSES = [
+        'not_required',
+        'required',
+        'scheduled',
+        'completed',
+        'alteration_needed',
+    ];
+
+    public const CHECKLIST_ITEMS = [
+        'Fabric received',
+        'Cutting done',
+        'Stitching done',
+        'Buttons attached',
+        'Ironing done',
+        'Final checking done',
+        'Packed',
+        'Delivered',
+    ];
+
     public const STATUS_BADGES = [
         'booked' => 'bg-primary-subtle text-primary-emphasis',
         'cutting' => 'bg-warning-subtle text-warning-emphasis',
@@ -45,7 +73,9 @@ class Order extends Model
         'order_no',
         'customer_id',
         'measurement_id',
+        'worker_id',
         'order_type',
+        'work_category',
         'fabric_details',
         'quantity',
         'total_amount',
@@ -53,11 +83,13 @@ class Order extends Model
         'balance_amount',
         'booking_date',
         'trial_date',
+        'trial_status',
         'delivery_date',
         'delivered_date',
         'status',
         'priority',
         'special_instructions',
+        'alteration_notes',
     ];
 
     protected static function booted(): void
@@ -79,6 +111,10 @@ class Order extends Model
                 'from_status' => null,
                 'to_status' => $order->status,
             ]);
+
+            foreach (self::CHECKLIST_ITEMS as $label) {
+                $order->checklistItems()->create(['label' => $label]);
+            }
         });
 
         static::updating(function (Order $order) {
@@ -174,6 +210,11 @@ class Order extends Model
         return $this->belongsTo(Measurement::class);
     }
 
+    public function worker(): BelongsTo
+    {
+        return $this->belongsTo(Worker::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class)->latest('payment_date')->latest();
@@ -182,6 +223,16 @@ class Order extends Model
     public function statusHistory(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class)->oldest();
+    }
+
+    public function checklistItems(): HasMany
+    {
+        return $this->hasMany(OrderChecklistItem::class)->oldest();
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(OrderAttachment::class)->latest();
     }
 
     public function refreshBalance(): void
@@ -238,6 +289,64 @@ class Order extends Model
             $this->order_no,
             number_format((float) $this->balance_amount, 0)
         ));
+    }
+
+    public function whatsappMessageActions(): array
+    {
+        $actions = [
+            [
+                'label' => 'Send Receipt Message',
+                'description' => 'Booking confirmation with total, advance, balance, and delivery date.',
+                'url' => $this->whatsappReceiptUrl(),
+                'variant' => 'outline-dark',
+            ],
+            [
+                'label' => 'Send Trial Reminder',
+                'description' => 'Trial appointment reminder.',
+                'url' => $this->trial_date ? $this->whatsappUrl(sprintf(
+                    'Assalam o Alaikum %s, reminder for trial of order %s on %s.',
+                    $this->customer?->name,
+                    $this->order_no,
+                    $this->trial_date->format('d M Y')
+                )) : null,
+                'variant' => 'outline-dark',
+            ],
+            [
+                'label' => 'Send Ready Message',
+                'description' => 'Notify customer that the order is ready for pickup.',
+                'url' => $this->whatsappUrl(sprintf(
+                    'Assalam o Alaikum %s, your order %s is ready for pickup. Balance: Rs. %s.',
+                    $this->customer?->name,
+                    $this->order_no,
+                    number_format((float) $this->balance_amount, 0)
+                )),
+                'variant' => 'outline-dark',
+            ],
+            [
+                'label' => 'Send Delivery Reminder',
+                'description' => 'Delivery date and current status reminder.',
+                'url' => $this->whatsappDeliveryReminderUrl(),
+                'variant' => 'outline-dark',
+            ],
+            [
+                'label' => 'Send Payment Reminder',
+                'description' => 'Remaining balance reminder.',
+                'url' => $this->whatsappPaymentReminderUrl(),
+                'variant' => 'outline-secondary',
+            ],
+            [
+                'label' => 'Send Thank You',
+                'description' => 'Short thank-you message after delivery.',
+                'url' => $this->whatsappUrl(sprintf(
+                    'Assalam o Alaikum %s, thank you for choosing us. We hope you liked your order %s.',
+                    $this->customer?->name,
+                    $this->order_no
+                )),
+                'variant' => 'outline-secondary',
+            ],
+        ];
+
+        return array_values(array_filter($actions, fn (array $action) => filled($action['url'])));
     }
 
     protected function whatsappUrl(string $message): ?string

@@ -4,6 +4,7 @@
 @section('page-title', 'Orders')
 @section('page-subtitle', 'Track every booking from booked to delivered, with overdue jobs easy to spot.')
 @section('page-actions')
+    <a href="{{ route('orders.kanban') }}" class="btn btn-outline-secondary">Kanban Board</a>
     <a href="{{ route('orders.create') }}" class="btn btn-dark">Book New Order</a>
 @endsection
 
