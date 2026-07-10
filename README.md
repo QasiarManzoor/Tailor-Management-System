@@ -30,6 +30,61 @@ This project replaces paper-based tailor workflows with a role-based, shop-aware
 - MySQL recommended for production
 - Laravel Tinker for admin/developer maintenance
 
+## Deploying on Vercel
+
+This repository includes Vercel configuration for Laravel:
+
+- `vercel.json` routes static files from `public/` and all app requests through `api/index.php`.
+- `api/index.php` boots the normal Laravel front controller.
+- `.vercelignore` keeps local and development-only files out of deployments.
+
+Set these environment variables in Vercel before deploying:
+
+```text
+APP_NAME="Tailor Management System"
+APP_ENV=production
+APP_KEY=base64:your-generated-key
+APP_DEBUG=false
+APP_URL=https://your-vercel-domain.vercel.app
+
+DB_CONNECTION=mysql
+DB_HOST=your-external-db-host
+DB_PORT=3306
+DB_DATABASE=your-db-name
+DB_USERNAME=your-db-user
+DB_PASSWORD=your-db-password
+
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=sync
+LOG_CHANNEL=stderr
+```
+
+Vercel does not provide persistent local disk storage. For uploaded order attachment images, use an external disk such as S3-compatible storage:
+
+```text
+FILESYSTEM_DISK=s3
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_DEFAULT_REGION=...
+AWS_BUCKET=...
+AWS_URL=...
+AWS_ENDPOINT=...
+AWS_USE_PATH_STYLE_ENDPOINT=false
+```
+
+Generate an app key locally with:
+
+```bash
+php artisan key:generate --show
+```
+
+Run migrations against the production database after environment variables are configured:
+
+```bash
+php artisan migrate --force
+```
+
 ## Core Modules
 
 ### Owner Business Modules
