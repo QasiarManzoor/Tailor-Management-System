@@ -79,6 +79,16 @@
                 </div>
             </div>
 
+            @include('orders._operations_panel')
+
+            @include('orders._production_checklist')
+
+            @include('orders._attachments')
+
+            @include('orders._communication_actions')
+
+            @include('orders._status_timeline')
+
             <div class="card card-soft">
                 <div class="card-body p-4">
                     <div class="section-title mb-3">Quick Actions</div>

@@ -72,7 +72,7 @@
     <div class="col-md-6">
         <label for="role" class="form-label">Role</label>
         <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
-            @foreach (['owner' => 'Owner', 'super_admin' => 'Super Admin'] as $value => $label)
+            @foreach (\App\Models\User::ROLES as $value => $label)
                 <option value="{{ $value }}" @selected(old('role', $user->role) === $value)>{{ $label }}</option>
             @endforeach
         </select>

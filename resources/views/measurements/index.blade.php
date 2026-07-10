@@ -65,6 +65,7 @@
                                 <td class="text-end">
                                     <div class="d-inline-flex gap-2">
                                         <a href="{{ route('measurements.show', $measurement) }}" class="btn btn-sm btn-outline-dark">View</a>
+                                        <a href="{{ route('measurements.copy', $measurement) }}" class="btn btn-sm btn-outline-dark">Copy</a>
                                         <a href="{{ route('measurements.edit', $measurement) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         <form method="POST" action="{{ route('measurements.destroy', $measurement) }}" onsubmit="return confirm('Delete this measurement?')">
                                             @csrf

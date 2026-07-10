@@ -25,18 +25,18 @@ return new class extends Migration
             });
         }
 
-        $existingShopId = DB::table('shops')->where('code', 'master-rashid')->value('id');
+        $existingShopId = DB::table('shops')->where('code', 'default-tailor-shop')->value('id');
 
         if (! $existingShopId) {
             DB::table('shops')->insert([
-                'name' => 'MASTER RASHID',
-                'code' => 'master-rashid',
+                'name' => 'XYZ Tailor Shop',
+                'code' => 'default-tailor-shop',
                 'tagline' => 'Digital Order Slip',
-                'phone_primary' => '0313-5271056',
-                'phone_secondary' => '057-6108185',
-                'address_line_1' => 'Shop # 4, Faizan Plaza, Upside Mezan Bank Basement',
-                'address_line_2' => 'Near Soneri Bank Main PWD Islamabad',
-                'logo_path' => 'images/shaq-logo.png',
+                'phone_primary' => null,
+                'phone_secondary' => null,
+                'address_line_1' => null,
+                'address_line_2' => null,
+                'logo_path' => 'images/shaq-logo-web-safe.png',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

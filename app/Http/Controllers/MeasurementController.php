@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MeasurementRequest;
 use App\Models\Customer;
 use App\Models\Measurement;
+use App\Support\FastSearch;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,13 +18,7 @@ class MeasurementController extends Controller
 
         $measurements = Measurement::with('customer')
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($innerQuery) use ($search) {
-                    $innerQuery->where('title', 'like', '%'.$search.'%')
-                        ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                            $customerQuery->where('name', 'like', '%'.$search.'%')
-                                ->orWhere('phone', 'like', '%'.$search.'%');
-                        });
-                });
+                FastSearch::measurements($query, $search);
             })
             ->latest()
             ->paginate(12)
@@ -37,12 +32,31 @@ class MeasurementController extends Controller
 
     public function create(Request $request): View
     {
+        $copySource = null;
+        $measurement = new Measurement([
+            'customer_id' => $request->integer('customer_id') ?: null,
+        ]);
+
+        if ($request->integer('copy_from')) {
+            $copySource = Measurement::with('customer')->findOrFail($request->integer('copy_from'));
+            $measurement = $copySource->replicate();
+            $measurement->title = $copySource->title.' Copy';
+            $measurement->customer_id = $request->integer('customer_id') ?: $copySource->customer_id;
+            $measurement->shop_id = $copySource->shop_id;
+        }
+
         return view('measurements.create', [
-            'measurement' => new Measurement([
-                'customer_id' => $request->integer('customer_id') ?: null,
-            ]),
+            'measurement' => $measurement,
+            'copySource' => $copySource,
             'customers' => Customer::orderBy('name')->get(),
             'measurementDate' => now()->toDateString(),
+        ]);
+    }
+
+    public function copy(Measurement $measurement): RedirectResponse
+    {
+        return redirect()->route('measurements.create', [
+            'copy_from' => $measurement->id,
         ]);
     }
 

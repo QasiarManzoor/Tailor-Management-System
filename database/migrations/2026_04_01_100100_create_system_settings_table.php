@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('system_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('shop_name')->default('MASTER RASHID');
+            $table->string('shop_name')->default('XYZ Tailor Shop');
             $table->string('shop_tagline')->default('Digital Order Slip');
             $table->string('shop_phone_primary')->nullable();
             $table->string('shop_phone_secondary')->nullable();

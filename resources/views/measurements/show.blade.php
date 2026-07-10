@@ -5,6 +5,7 @@
 @section('page-subtitle', 'Bilingual measurement slip view for quick reading at the shop counter.')
 @section('page-actions')
 
+    <a href="{{ route('measurements.copy', $measurement) }}" class="btn btn-outline-dark">Copy Measurement</a>
     <a href="{{ route('measurements.edit', $measurement) }}" class="btn btn-outline-secondary">Edit Measurement</a>
     <a href="{{ route('orders.create', ['customer_id' => $measurement->customer_id]) }}" class="btn btn-dark">Book Order</a>
 @endsection

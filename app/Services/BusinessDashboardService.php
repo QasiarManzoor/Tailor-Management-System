@@ -30,6 +30,18 @@ class BusinessDashboardService
                 ->orderByDesc('priority')
                 ->orderBy('delivery_date')
                 ->get(),
+            'overdueOrdersList' => Order::with('customer')
+                ->whereDate('delivery_date', '<', $today)
+                ->whereNotIn('status', ['delivered', 'cancelled'])
+                ->orderBy('delivery_date')
+                ->take(6)
+                ->get(),
+            'urgentOrders' => Order::with('customer')
+                ->where('priority', 'urgent')
+                ->whereNotIn('status', ['delivered', 'cancelled'])
+                ->orderBy('delivery_date')
+                ->take(6)
+                ->get(),
             'pendingBalanceOrders' => Order::with('customer')
                 ->where('balance_amount', '>', 0)
                 ->orderByDesc('balance_amount')

@@ -4,6 +4,7 @@
 @section('page-title', $customer->name)
 @section('page-subtitle', 'Customer profile, saved measurements, and order history.')
 @section('page-actions')
+    <a href="{{ route('customers.ledger', $customer) }}" class="btn btn-outline-secondary">Ledger</a>
     <a href="{{ route('measurements.create', ['customer_id' => $customer->id]) }}" class="btn btn-outline-secondary">Add Measurement</a>
     <a href="{{ route('orders.create', ['customer_id' => $customer->id]) }}" class="btn btn-dark">Book Order</a>
 @endsection

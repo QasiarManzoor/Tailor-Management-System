@@ -372,6 +372,51 @@
             flex: 1;
             min-width: 0;
         }
+        .sidebar-menu-toggle {
+            width: 2.4rem;
+            height: 2.4rem;
+            padding: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #fff;
+            border-color: rgba(255, 255, 255, .32);
+            background: rgba(255, 255, 255, .08);
+        }
+        .sidebar-menu-toggle:hover,
+        .sidebar-menu-toggle:focus {
+            color: #fff;
+            border-color: rgba(255, 255, 255, .5);
+            background: rgba(255, 255, 255, .16);
+        }
+        .sidebar-menu-icon {
+            position: relative;
+            width: 1.05rem;
+            height: .75rem;
+            display: inline-block;
+        }
+        .sidebar-menu-icon::before,
+        .sidebar-menu-icon::after,
+        .sidebar-menu-icon span {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            border-radius: 999px;
+            background: currentColor;
+        }
+        .sidebar-menu-icon::before {
+            top: 0;
+        }
+        .sidebar-menu-icon span {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .sidebar-menu-icon::after {
+            bottom: 0;
+        }
         .theme-toggle-icon {
             font-size: 1.05rem;
             line-height: 1;
@@ -782,14 +827,183 @@
             }
         }
         @media (max-width: 991.98px) {
+            body {
+                background:
+                    radial-gradient(circle at top right, var(--bg-gradient-accent), transparent 18rem),
+                    linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-color) 100%);
+            }
+            .container-fluid {
+                --bs-gutter-x: 0;
+            }
             .sidebar {
                 min-height: auto;
+                position: sticky;
+                top: 0;
+                z-index: 1030;
+                padding: .7rem .85rem !important;
+                border-right: 0;
+                box-shadow: 0 10px 24px rgba(0, 0, 0, .14);
+            }
+            .sidebar-brand {
+                margin-bottom: 0;
+            }
+            .brand-badge {
+                width: 2.45rem;
+                height: 2.45rem;
+                border-radius: .75rem;
+            }
+            .sidebar-brand-copy small {
+                display: none;
+            }
+            .sidebar-menu-toggle {
+                display: inline-flex;
+            }
+            .sidebar-collapsible {
+                padding-top: .7rem;
+            }
+            .sidebar .nav {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: .45rem !important;
+            }
+            .sidebar .nav-link {
+                min-height: 2.75rem;
+                padding: .55rem;
+            }
+            .sidebar-meta {
+                margin-top: .6rem;
+                margin-bottom: .6rem;
+            }
+            main.col-lg-10 {
+                padding: .75rem .75rem 1.25rem !important;
+            }
+            .page-header {
+                align-items: stretch !important;
+            }
+            .page-title-text {
+                font-size: 1.45rem;
+            }
+            .page-header > div:last-child,
+            .page-actions,
+            .mobile-actions-stack {
+                width: 100%;
+            }
+            .page-header form[role="search"] {
+                width: 100%;
+            }
+            .page-header form[role="search"] .form-control {
+                min-width: 0 !important;
+                flex: 1 1 auto;
+            }
+            .page-header form[role="search"] .btn {
+                flex: 0 0 auto;
+            }
+            .page-header .btn,
+            .filters-shell .btn,
+            .record-actions .btn,
+            .empty-state .btn {
+                min-height: 2.6rem;
+            }
+            .page-header > div:last-child > .btn,
+            .page-header > div:last-child > form:not([role="search"]) {
+                flex: 1 1 10rem;
+            }
+            .page-header > div:last-child > .btn,
+            .page-header > div:last-child > form:not([role="search"]) .btn {
+                width: 100%;
+            }
+            .filters-shell .card-body,
+            .card-body.p-4,
+            .card-header.p-4,
+            .card-footer.p-4,
+            .p-4.p-lg-5,
+            .p-lg-5 {
+                padding: .8rem !important;
+            }
+            .filters-shell form .col-auto {
+                width: 100%;
+            }
+            .filters-shell form .col-auto .btn {
+                width: 100%;
+            }
+            .form-control,
+            .form-select,
+            .btn {
+                font-size: 1rem;
             }
             .mobile-record-grid {
-                display: block;
+                display: grid;
+                gap: .6rem;
             }
             .desktop-table {
                 display: none;
+            }
+            .record-card {
+                padding: .85rem;
+            }
+            .record-card > .d-flex {
+                flex-direction: column;
+                gap: .5rem !important;
+            }
+            .record-card .status-badge,
+            .record-card .status-pill,
+            .record-card .list-chip {
+                max-width: 100%;
+            }
+            .record-meta {
+                gap: .4rem;
+            }
+            .list-chip {
+                min-height: 2rem;
+                overflow-wrap: anywhere;
+            }
+            .record-actions {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .record-actions .btn,
+            .record-actions form,
+            .record-actions form .btn {
+                width: 100%;
+            }
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .table {
+                min-width: 42rem;
+            }
+            .pagination {
+                flex-wrap: wrap;
+                gap: .25rem;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .sidebar {
+                padding-left: .7rem !important;
+                padding-right: .7rem !important;
+            }
+            .sidebar .nav {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .sidebar-brand-copy .fw-semibold {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            main.col-lg-10 {
+                padding-left: .6rem !important;
+                padding-right: .6rem !important;
+            }
+            .page-header form[role="search"] {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) auto;
+            }
+            .record-actions {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .stat-value {
+                font-size: 1.55rem;
             }
         }
     </style>
@@ -816,39 +1030,51 @@
                     <span class="theme-toggle-icon" id="theme-toggle-icon" aria-hidden="true">&#9789;</span>
                     <span class="visually-hidden" id="theme-toggle-label">Dark Mode</span>
                 </button>
+                <button type="button" class="btn sidebar-menu-toggle" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="sidebar-menu-icon" aria-hidden="true"><span></span></span>
+                </button>
             </div>
-            <div class="sidebar-meta">
-                {{ $systemSettings->receipt_footer_company_name ?: 'ShaQ Technologies' }}
-            </div>
-            <nav class="nav flex-column gap-2">
-                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><span class="nav-icon">&#9783;</span><span class="nav-label">Dashboard</span></a>
-                <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="{{ route('customers.index') }}"><span class="nav-icon">&#9786;</span><span class="nav-label">Customers</span></a>
-                <a class="nav-link {{ request()->routeIs('measurements.*') ? 'active' : '' }}" href="{{ route('measurements.index') }}"><span class="nav-icon">&#9998;</span><span class="nav-label">Measurements</span></a>
-                <a class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}"><span class="nav-icon">&#9636;</span><span class="nav-label">Orders</span></a>
-                @if (auth()->user()?->isOwner() || $managedShopContext)
-                    <a class="nav-link {{ request()->routeIs('shop-header.*') ? 'active' : '' }}" href="{{ route('shop-header.edit') }}"><span class="nav-icon">&#9997;</span><span class="nav-label">Slip Header</span></a>
-                @endif
-                @if (auth()->user()?->isSuperAdmin())
-                    <a class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}" href="{{ route('superadmin.dashboard') }}"><span class="nav-icon">&#9881;</span><span class="nav-label">Super Admin Dashboard</span></a>
-                    <a class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}" href="{{ route('superadmin.users.index') }}"><span class="nav-icon">&#128101;</span><span class="nav-label">User Management</span></a>
-                    <a class="nav-link {{ request()->routeIs('superadmin.shops.*') ? 'active' : '' }}" href="{{ route('superadmin.shops.index') }}"><span class="nav-icon">&#127970;</span><span class="nav-label">Shop Management</span></a>
-                    <a class="nav-link {{ request()->routeIs('superadmin.settings.*') ? 'active' : '' }}" href="{{ route('superadmin.settings.edit') }}"><span class="nav-icon">&#9881;</span><span class="nav-label">System Settings</span></a>
-                    <a class="nav-link {{ request()->routeIs('superadmin.activity-logs.*') ? 'active' : '' }}" href="{{ route('superadmin.activity-logs.index') }}"><span class="nav-icon">&#128221;</span><span class="nav-label">Activity Logs</span></a>
-                @endif
-            </nav>
-            @auth
-                <div class="sidebar-meta mt-3">
-                    <div class="fw-semibold text-white">{{ auth()->user()->name }}</div>
-                    <div class="small text-white-50">{{ auth()->user()->email }}</div>
-                    <div class="small text-white-50 text-uppercase">{{ str_replace('_', ' ', auth()->user()->role) }}</div>
+            <div class="collapse d-lg-block sidebar-collapsible" id="sidebar-menu">
+                <div class="sidebar-meta">
+                    {{ $systemSettings->receipt_footer_company_name ?: 'ShaQ Technologies' }}
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="mt-2">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-light w-100 rounded-4">Sign Out</button>
-                </form>
-            @endauth
+                <nav class="nav flex-column gap-2">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><span class="nav-icon">&#9783;</span><span class="nav-label">Dashboard</span></a>
+                    <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="{{ route('customers.index') }}"><span class="nav-icon">&#9786;</span><span class="nav-label">Customers</span></a>
+                    <a class="nav-link {{ request()->routeIs('measurements.*') ? 'active' : '' }}" href="{{ route('measurements.index') }}"><span class="nav-icon">&#9998;</span><span class="nav-label">Measurements</span></a>
+                    <a class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}"><span class="nav-icon">&#9636;</span><span class="nav-label">Orders</span></a>
+                    <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}"><span class="nav-icon">&#128202;</span><span class="nav-label">Reports</span></a>
+                    <a class="nav-link {{ request()->routeIs('data-transfer.*') ? 'active' : '' }}" href="{{ route('data-transfer.index') }}"><span class="nav-icon">&#8645;</span><span class="nav-label">Data Transfer</span></a>
+                    <a class="nav-link {{ request()->routeIs('calendar.*') ? 'active' : '' }}" href="{{ route('calendar.index') }}"><span class="nav-icon">&#128197;</span><span class="nav-label">Calendar</span></a>
+                    <a class="nav-link {{ request()->routeIs('inventory.*') ? 'active' : '' }}" href="{{ route('inventory.index') }}"><span class="nav-icon">&#9638;</span><span class="nav-label">Inventory</span></a>
+                    <a class="nav-link {{ request()->routeIs('workers.*') ? 'active' : '' }}" href="{{ route('workers.index') }}"><span class="nav-icon">&#9874;</span><span class="nav-label">Workers</span></a>
+                    <a class="nav-link {{ request()->routeIs('cashbook.*') ? 'active' : '' }}" href="{{ route('cashbook.index') }}"><span class="nav-icon">$</span><span class="nav-label">Cashbook</span></a>
+                    @if (auth()->user()?->isOwner() || $managedShopContext)
+                        <a class="nav-link {{ request()->routeIs('shop-header.*') ? 'active' : '' }}" href="{{ route('shop-header.edit') }}"><span class="nav-icon">&#9997;</span><span class="nav-label">Shop Profile</span></a>
+                    @endif
+                    @if (auth()->user()?->isSuperAdmin())
+                        <a class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}" href="{{ route('superadmin.dashboard') }}"><span class="nav-icon">&#9881;</span><span class="nav-label">Super Admin Dashboard</span></a>
+                        <a class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}" href="{{ route('superadmin.users.index') }}"><span class="nav-icon">&#128101;</span><span class="nav-label">User Management</span></a>
+                        <a class="nav-link {{ request()->routeIs('superadmin.shops.*') ? 'active' : '' }}" href="{{ route('superadmin.shops.index') }}"><span class="nav-icon">&#127970;</span><span class="nav-label">Shop Management</span></a>
+                        <a class="nav-link {{ request()->routeIs('superadmin.settings.*') ? 'active' : '' }}" href="{{ route('superadmin.settings.edit') }}"><span class="nav-icon">&#9881;</span><span class="nav-label">System Settings</span></a>
+                        <a class="nav-link {{ request()->routeIs('superadmin.activity-logs.*') ? 'active' : '' }}" href="{{ route('superadmin.activity-logs.index') }}"><span class="nav-icon">&#128221;</span><span class="nav-label">Activity Logs</span></a>
+                        <a class="nav-link {{ request()->routeIs('superadmin.backups.*') ? 'active' : '' }}" href="{{ route('superadmin.backups.index') }}"><span class="nav-icon">&#8681;</span><span class="nav-label">Backups</span></a>
+                    @endif
+                </nav>
+                @auth
+                    <div class="sidebar-meta mt-3">
+                        <div class="fw-semibold text-white">{{ auth()->user()->name }}</div>
+                        <div class="small text-white-50">{{ auth()->user()->email }}</div>
+                        <div class="small text-white-50 text-uppercase">{{ str_replace('_', ' ', auth()->user()->role) }}</div>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-light w-100 rounded-4">Sign Out</button>
+                    </form>
+                @endauth
+            </div>
         </aside>
-        <main class="col-lg-10 px-3 px-lg-4">
+        <main class="col-lg-10 px-3 px-lg-4" id="app-main">
             @php
                 $pageTitle = trim((string) $__env->yieldContent('page-title', 'Tailor Shop Management'));
                 $pageSubtitle = trim((string) $__env->yieldContent('page-subtitle', 'Manage customers, measurements, orders, and payments in one place.'));
@@ -867,6 +1093,11 @@
                     </div>
                 @endif
                 <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center{{ $showPageCopy ? '' : ' ms-md-auto' }}">
+                    @auth
+                        <form method="GET" action="{{ route('global-search.index') }}" class="d-flex gap-2 align-items-center" role="search" data-auto-search-form="header">
+                            <input type="search" name="q" value="{{ request('q') }}" class="form-control" style="min-width: min(18rem, 58vw);" placeholder="Search customers, orders, phones" autocomplete="off" aria-label="Search customers, orders, and phones" data-auto-search-input>
+                        </form>
+                    @endauth
                     @yield('page-actions')
                 </div>
             </div>
@@ -1000,6 +1231,142 @@
                 input.value = sanitizePhone(input.value);
             });
         });
+    })();
+
+    (function () {
+        var activeSearchController = null;
+
+        function autoSearchForms() {
+            return document.querySelectorAll('[data-auto-search-form]');
+        }
+
+        function buildSearchUrl(form, value) {
+            var url = new URL(form.action || window.location.href, window.location.origin);
+            var input = form.querySelector('[data-auto-search-input]');
+            var name = input && input.name ? input.name : 'q';
+
+            url.searchParams.set(name, value);
+
+            return url;
+        }
+
+        function focusSearchInput(formKey, value, cursorPosition) {
+            var selector = '[data-auto-search-form="' + formKey + '"] [data-auto-search-input]';
+            var nextInput = document.querySelector(selector);
+
+            if (!nextInput) {
+                nextInput = document.querySelector('[data-auto-search-input]');
+            }
+
+            if (!nextInput) {
+                return;
+            }
+
+            nextInput.value = value;
+            nextInput.focus();
+
+            if (typeof nextInput.setSelectionRange === 'function') {
+                var position = Math.min(cursorPosition, nextInput.value.length);
+                nextInput.setSelectionRange(position, position);
+            }
+        }
+
+        function replaceMainContent(html) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(html, 'text/html');
+            var nextMain = doc.getElementById('app-main');
+            var currentMain = document.getElementById('app-main');
+
+            if (!nextMain || !currentMain) {
+                throw new Error('Search results could not be loaded.');
+            }
+
+            currentMain.innerHTML = nextMain.innerHTML;
+        }
+
+        function runSearch(form, input, formKey, value, cursorPosition) {
+            var url = buildSearchUrl(form, value);
+
+            if (activeSearchController) {
+                activeSearchController.abort();
+            }
+
+            activeSearchController = new AbortController();
+
+            fetch(url.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                signal: activeSearchController.signal
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Search request failed.');
+                    }
+
+                    return response.text();
+                })
+                .then(function (html) {
+                    if (input.value.trim() !== value) {
+                        return;
+                    }
+
+                    replaceMainContent(html);
+                    window.history.replaceState({}, '', url.toString());
+                    initializeAutoSearch();
+                    focusSearchInput(formKey, value, cursorPosition);
+                })
+                .catch(function (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+
+                    window.location.assign(url.toString());
+                });
+        }
+
+        function initializeAutoSearch() {
+            autoSearchForms().forEach(function (form) {
+                if (form.dataset.autoSearchReady === 'true') {
+                    return;
+                }
+
+                var input = form.querySelector('[data-auto-search-input]');
+                var timer;
+                var lastSubmittedValue = input ? input.value.trim() : '';
+                var formKey = form.getAttribute('data-auto-search-form') || 'default';
+
+                if (!input) {
+                    return;
+                }
+
+                form.dataset.autoSearchReady = 'true';
+
+                function submitSearch() {
+                    var nextValue = input.value.trim();
+                    var cursorPosition = typeof input.selectionStart === 'number' ? input.selectionStart : nextValue.length;
+
+                    if (nextValue === lastSubmittedValue) {
+                        return;
+                    }
+
+                    lastSubmittedValue = nextValue;
+                    runSearch(form, input, formKey, nextValue, cursorPosition);
+                }
+
+                input.addEventListener('input', function () {
+                    window.clearTimeout(timer);
+                    timer = window.setTimeout(submitSearch, 300);
+                });
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    window.clearTimeout(timer);
+                    lastSubmittedValue = '';
+                    submitSearch();
+                });
+            });
+        }
+
+        initializeAutoSearch();
     })();
 </script>
 @stack('scripts')
