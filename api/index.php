@@ -3,6 +3,17 @@
 $storagePath = '/tmp/laravel';
 
 foreach ([
+    $storagePath,
+    $storagePath.'/framework',
+    $storagePath.'/framework/cache',
+    $storagePath.'/framework/views',
+] as $path) {
+    if (! is_dir($path)) {
+        mkdir($path, 0777, true);
+    }
+}
+
+foreach ([
     'APP_ENV' => 'production',
     'CACHE_STORE' => 'array',
     'LOG_CHANNEL' => 'stderr',
@@ -23,17 +34,6 @@ if (getenv('MYSQL_ATTR_SSL_CA_CONTENT') !== false && getenv('MYSQL_ATTR_SSL_CA_C
     putenv('MYSQL_ATTR_SSL_CA='.$sslCaPath);
     $_ENV['MYSQL_ATTR_SSL_CA'] = $sslCaPath;
     $_SERVER['MYSQL_ATTR_SSL_CA'] = $sslCaPath;
-}
-
-foreach ([
-    $storagePath,
-    $storagePath.'/framework',
-    $storagePath.'/framework/cache',
-    $storagePath.'/framework/views',
-] as $path) {
-    if (! is_dir($path)) {
-        mkdir($path, 0777, true);
-    }
 }
 
 foreach ([
