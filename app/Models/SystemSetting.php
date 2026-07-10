@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 
 class SystemSetting extends Model
@@ -43,9 +44,13 @@ class SystemSetting extends Model
 
     public static function current(): self
     {
-        $attributes = Cache::rememberForever(self::CACHE_KEY, function (): array {
-            return static::query()->firstOrCreate([], static::defaults())->attributesToArray();
-        });
+        try {
+            $attributes = Cache::rememberForever(self::CACHE_KEY, function (): array {
+                return static::query()->firstOrCreate([], static::defaults())->attributesToArray();
+            });
+        } catch (QueryException) {
+            $attributes = static::defaults();
+        }
 
         $settings = new static();
         $settings->exists = true;
@@ -59,4 +64,3 @@ class SystemSetting extends Model
         Cache::forget(self::CACHE_KEY);
     }
 }
-

@@ -3,6 +3,20 @@
 $storagePath = '/tmp/laravel';
 
 foreach ([
+    'APP_ENV' => 'production',
+    'CACHE_STORE' => 'array',
+    'LOG_CHANNEL' => 'stderr',
+    'QUEUE_CONNECTION' => 'sync',
+    'SESSION_DRIVER' => 'cookie',
+] as $key => $value) {
+    if (getenv($key) === false) {
+        putenv($key.'='.$value);
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
+    }
+}
+
+foreach ([
     $storagePath,
     $storagePath.'/framework',
     $storagePath.'/framework/cache',
