@@ -16,7 +16,10 @@ return new class extends Migration
         $this->addShopColumn('payments');
         $this->addShopColumn('activity_logs');
 
-        $defaultShopId = DB::table('shops')->where('code', 'master-rashid')->value('id');
+        $defaultShopId = DB::table('shops')
+            ->whereIn('code', ['default-tailor-shop', 'master-rashid'])
+            ->orderByRaw("case when code = 'default-tailor-shop' then 0 else 1 end")
+            ->value('id');
 
         if (! $defaultShopId) {
             return;

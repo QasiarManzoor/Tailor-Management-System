@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Throwable;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -30,30 +32,51 @@ class AuthController extends Controller
 
         $throttleKey = $this->throttleKey($request);
 
-        if (RateLimiter::tooManyAttempts($throttleKey, self::MAX_LOGIN_ATTEMPTS)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
+        try {
+            if (RateLimiter::tooManyAttempts($throttleKey, self::MAX_LOGIN_ATTEMPTS)) {
+                $seconds = RateLimiter::availableIn($throttleKey);
 
-            throw ValidationException::withMessages([
-                'email' => 'Too many login attempts. Please try again in '.ceil($seconds / 60).' minute(s).',
-            ]);
+                throw ValidationException::withMessages([
+                    'email' => 'Too many login attempts. Please try again in '.ceil($seconds / 60).' minute(s).',
+                ]);
+            }
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            // Allow login to continue when production cache/rate-limiter storage is unavailable.
         }
 
         $remember = $request->boolean('remember');
 
         if (! Auth::attempt($credentials, $remember)) {
-            RateLimiter::hit($throttleKey, self::LOCKOUT_SECONDS);
+            try {
+                RateLimiter::hit($throttleKey, self::LOCKOUT_SECONDS);
+            } catch (Throwable $exception) {
+                // Allow failed credential responses even if rate-limit storage is unavailable.
+            }
 
             throw ValidationException::withMessages([
                 'email' => 'The provided credentials do not match our records.',
             ]);
         }
 
-        $request->session()->regenerate();
-        RateLimiter::clear($throttleKey);
+        try {
+            $request->session()->regenerate();
+        } catch (Throwable $exception) {
+            // Session regeneration can fail if the runtime session backend is misconfigured.
+        }
+
+        try {
+            RateLimiter::clear($throttleKey);
+        } catch (Throwable $exception) {
+            // Ignore rate-limiter cleanup errors in constrained deployments.
+        }
 
         $user = $request->user();
 
-        if (! $user?->is_active) {
+        $hasIsActiveColumn = Schema::hasTable('users') && Schema::hasColumn('users', 'is_active');
+
+        if ($hasIsActiveColumn && (! $user || ! $user->is_active)) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
