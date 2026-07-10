@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\SystemSetting;
 use App\Support\CurrentShop;
 use App\Support\DefaultShopProvisioner;
+use App\Support\DefaultUserProvisioner;
 use Illuminate\Database\QueryException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         try {
             Cache::remember('bootstrap.default-shop', now()->addMinutes(10), function (): bool {
                 DefaultShopProvisioner::ensureDefaultShopExists();
+                DefaultUserProvisioner::ensureSuperAdminExists();
 
                 return true;
             });
