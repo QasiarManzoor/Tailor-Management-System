@@ -16,6 +16,15 @@ foreach ([
     }
 }
 
+if (getenv('MYSQL_ATTR_SSL_CA_CONTENT') !== false && getenv('MYSQL_ATTR_SSL_CA_CONTENT') !== '') {
+    $sslCaPath = $storagePath.'/mysql-ca.pem';
+    file_put_contents($sslCaPath, str_replace('\n', "\n", (string) getenv('MYSQL_ATTR_SSL_CA_CONTENT')));
+
+    putenv('MYSQL_ATTR_SSL_CA='.$sslCaPath);
+    $_ENV['MYSQL_ATTR_SSL_CA'] = $sslCaPath;
+    $_SERVER['MYSQL_ATTR_SSL_CA'] = $sslCaPath;
+}
+
 foreach ([
     $storagePath,
     $storagePath.'/framework',

@@ -60,6 +60,20 @@ QUEUE_CONNECTION=sync
 LOG_CHANNEL=stderr
 ```
 
+You can also use `.env.vercel.example` as the source template for Vercel environment variables. If your MySQL provider gives one connection string, set:
+
+```text
+DB_CONNECTION=mysql
+DB_URL=mysql://user:password@host:3306/database
+```
+
+Some hosted MySQL providers require TLS. If they provide a CA certificate as text, set it in Vercel like this:
+
+```text
+MYSQL_ATTR_SSL_CA_CONTENT="-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"
+MYSQL_ATTR_SSL_VERIFY_SERVER_CERT=false
+```
+
 Vercel does not provide persistent local disk storage. For uploaded order attachment images, use an external disk such as S3-compatible storage:
 
 ```text
@@ -82,7 +96,7 @@ php artisan key:generate --show
 Run migrations against the production database after environment variables are configured:
 
 ```bash
-php artisan migrate --force
+composer run migrate:production
 ```
 
 ## Core Modules
